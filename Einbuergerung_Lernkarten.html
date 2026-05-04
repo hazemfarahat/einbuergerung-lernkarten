@@ -1,0 +1,1900 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Einbürgerung – Lernkarten</title>
+
+<!-- iOS PWA Support -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Einbürgerung">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%230f1f3d' width='100' height='100'/><text y='70' x='50' text-anchor='middle' font-size='60' fill='%23c9a84c' font-weight='bold'>🇩🇪</text></svg>">
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f1f3d">
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:   #0f1f3d;
+    --gold:   #c9a84c;
+    --gold-lt:#f0d898;
+    --cream:  #faf7f0;
+    --slate:  #4a5568;
+    --green:  #1a4731;
+    --green-lt:#e8f5ee;
+    --red:    #8b1a1a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Sans 3', sans-serif;
+    background: var(--navy);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 40px;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(201,168,76,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(201,168,76,0.08) 0%, transparent 50%);
+  }
+
+  /* ── Header ── */
+  header {
+    text-align: center;
+    margin-bottom: 28px;
+    width: 100%;
+    max-width: 780px;
+    position: relative;
+  }
+  header .eyebrow {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(24px, 5vw, 38px);
+    font-weight: 900;
+    color: var(--cream);
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+  header h1 span { color: var(--gold); }
+  header .subtitle {
+    font-size: 13px;
+    color: rgba(250,247,240,0.55);
+    letter-spacing: 1px;
+  }
+
+  /* ── Progress ── */
+  .progress-wrap {
+    width: 100%;
+    max-width: 780px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .progress-bar {
+    flex: 1;
+    height: 3px;
+    background: rgba(201,168,76,0.2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-size: 12px;
+    color: var(--gold);
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: 60px;
+    text-align: right;
+  }
+  .chapter-tag {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(201,168,76,0.7);
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  /* ── Card ── */
+  .card-viewport {
+    width: 100%;
+    max-width: 780px;
+    perspective: 1200px;
+  }
+
+  .card {
+    width: 100%;
+    min-height: 480px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.65s cubic-bezier(0.23, 1, 0.32, 1);
+    cursor: pointer;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+
+  .card-face {
+    position: absolute;
+    width: 100%;
+    min-height: 480px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Front face (Question) ── */
+  .card-front {
+    background: var(--cream);
+    border: 1px solid rgba(201,168,76,0.25);
+    box-shadow:
+      0 20px 60px rgba(0,0,0,0.4),
+      0 0 0 1px rgba(201,168,76,0.1) inset;
+    overflow: hidden;
+  }
+  .card-front .corner-deco {
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, transparent 50%, rgba(201,168,76,0.15) 50%);
+    border-radius: 0 16px 0 0;
+  }
+  .card-front .card-header {
+    background: var(--navy);
+    padding: 16px 24px 14px;
+    border-radius: 15px 15px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-front .card-header .chapter-badge {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .card-front .card-header .q-label {
+    margin-left: auto;
+    font-size: 10px;
+    color: rgba(250,247,240,0.4);
+    letter-spacing: 1px;
+  }
+  .card-front .card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 36px 28px;
+    text-align: center;
+  }
+  .card-front .question-mark {
+    font-family: 'Playfair Display', serif;
+    font-size: 72px;
+    color: rgba(201,168,76,0.12);
+    line-height: 1;
+    margin-bottom: 16px;
+    user-select: none;
+  }
+  .card-front .question-text {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(17px, 3vw, 22px);
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.4;
+    max-width: 580px;
+  }
+  .card-front .flip-hint {
+    margin-top: 28px;
+    font-size: 11px;
+    color: rgba(74,85,104,0.6);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .card-front .flip-hint::before,
+  .card-front .flip-hint::after {
+    content: '';
+    display: inline-block;
+    width: 20px; height: 1px;
+    background: rgba(74,85,104,0.3);
+  }
+
+  /* ── Back face (Answer) ── */
+  .card-back {
+    background: var(--navy);
+    transform: rotateY(180deg);
+    border: 1px solid rgba(201,168,76,0.2);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    overflow: hidden;
+  }
+  .card-back .card-header {
+    background: rgba(201,168,76,0.1);
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 15px 15px 0 0;
+  }
+  .card-back .card-header .a-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+  }
+  .card-back .card-header .chapter-badge {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(201,168,76,0.55);
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-left: auto;
+  }
+  .card-back .card-body {
+    flex: 1;
+    padding: 24px 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+  }
+
+  .answer-block {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 10px;
+    padding: 14px 18px;
+  }
+  .answer-block .block-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .answer-block .block-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.2;
+  }
+  .answer-block.original .block-label { color: rgba(250,247,240,0.5); }
+  .answer-block.original .block-text {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--cream);
+    white-space: pre-wrap;
+  }
+  .answer-block.simplified .block-label { color: #5fbd8a; }
+  .answer-block.simplified {
+    background: rgba(26,71,49,0.35);
+    border-color: rgba(95,189,138,0.2);
+  }
+  .answer-block.simplified .block-text {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #a8dfbe;
+    white-space: pre-wrap;
+  }
+
+  /* Personal hint block */
+  .answer-block.hint {
+    background: rgba(201,168,76,0.12);
+    border-color: rgba(201,168,76,0.3);
+    border-style: dashed;
+  }
+  .answer-block.hint .block-label {
+    color: var(--gold);
+  }
+  .answer-block.hint .hint-textarea {
+    width: 100%;
+    min-height: 60px;
+    padding: 10px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 6px;
+    color: var(--cream);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+  .answer-block.hint .hint-textarea::placeholder {
+    color: rgba(250,247,240,0.3);
+  }
+  .answer-block.hint .hint-textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+    background: rgba(0,0,0,0.3);
+  }
+  .answer-block.hint .hint-display {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--cream);
+    white-space: pre-wrap;
+    font-style: italic;
+  }
+  .answer-block.hint .hint-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .hint-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+    border-radius: 6px;
+    border: 1px solid rgba(201,168,76,0.3);
+    background: rgba(201,168,76,0.1);
+    color: var(--gold);
+    cursor: pointer;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+  .hint-btn:hover {
+    background: rgba(201,168,76,0.2);
+    border-color: var(--gold);
+  }
+
+
+  /* ── Controls ── */
+  .controls {
+    width: 100%;
+    max-width: 780px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 24px;
+    gap: 12px;
+  }
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 10px;
+    border: 1px solid rgba(201,168,76,0.3);
+    background: rgba(201,168,76,0.08);
+    color: var(--gold);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+  }
+  .btn:hover {
+    background: rgba(201,168,76,0.18);
+    border-color: rgba(201,168,76,0.6);
+    transform: translateY(-1px);
+  }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .btn-flip {
+    background: var(--gold);
+    color: var(--navy);
+    border-color: var(--gold);
+    padding: 12px 28px;
+  }
+  .btn-flip:hover {
+    background: var(--gold-lt);
+    border-color: var(--gold-lt);
+  }
+
+  /* ── Chapter dropdown ── */
+  .chapter-nav {
+    width: 100%;
+    max-width: 780px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .chapter-dropdown {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(201,168,76,0.3);
+    background: rgba(201,168,76,0.08);
+    color: var(--gold);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 280px;
+    text-align: left;
+  }
+
+  .chapter-dropdown:hover {
+    background: rgba(201,168,76,0.18);
+    border-color: rgba(201,168,76,0.6);
+  }
+
+  .chapter-dropdown option {
+    background: var(--navy);
+    color: var(--cream);
+    padding: 8px;
+  }
+
+  /* ── Keyboard hint ── */
+  .kbd-hints {
+    margin-top: 16px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .kbd-hint {
+    font-size: 11px;
+    color: rgba(250,247,240,0.3);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  kbd {
+    display: inline-block;
+    padding: 2px 6px;
+    border: 1px solid rgba(250,247,240,0.2);
+    border-radius: 4px;
+    font-size: 10px;
+    font-family: monospace;
+    color: rgba(250,247,240,0.4);
+  }
+
+  /* ── Slide transition ── */
+  .card-viewport.sliding-out { animation: slideOut 0.2s ease forwards; }
+  .card-viewport.sliding-in  { animation: slideIn  0.2s ease forwards; }
+  @keyframes slideOut {
+    to { opacity: 0; transform: translateX(-30px); }
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(30px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ── Mobile optimizations ── */
+  @media (max-width: 600px) {
+    body {
+      padding: 16px 12px 32px;
+    }
+    header {
+      padding-right: 80px; /* Make room for index button */
+    }
+    header h1 {
+      font-size: 28px;
+    }
+    .card {
+      min-height: 420px;
+    }
+    .card-face {
+      min-height: 420px;
+    }
+    .btn {
+      padding: 14px 20px;
+      font-size: 14px;
+      min-height: 48px; /* Better touch target */
+    }
+    .btn-flip {
+      padding: 14px 24px;
+    }
+    .ch-btn {
+      padding: 8px 16px;
+      font-size: 11px;
+      min-height: 44px; /* Touch-friendly */
+      display: inline-flex;
+      align-items: center;
+    }
+    .controls {
+      gap: 10px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    header .eyebrow {
+      font-size: 10px;
+    }
+    .card {
+      min-height: 380px;
+    }
+    .card-face {
+      min-height: 380px;
+    }
+    .card-front .question-text {
+      font-size: 18px;
+    }
+    .answer-block {
+      padding: 12px 16px;
+    }
+  }
+
+  /* ── Study Tracking Styles ──────────────────────────────────────────── */
+
+  /* Study tracking badge */
+  .study-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    z-index: 10;
+    display: none;
+    transition: all 0.3s ease;
+  }
+
+  .study-badge.studied {
+    background: rgba(26, 71, 49, 0.9);
+    color: #e8f5ee;
+    display: block;
+  }
+
+  .study-badge.revision {
+    background: rgba(139, 26, 26, 0.9);
+    color: var(--cream);
+    display: block;
+  }
+
+  /* Tracking action buttons */
+  .tracking-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  /* Font size controls */
+  .font-size-controls {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.2);
+  }
+
+  .font-size-label {
+    font-size: 10px;
+    color: rgba(250,247,240,0.5);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-right: 4px;
+  }
+
+  .font-size-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    border: 1px solid rgba(201,168,76,0.3);
+    background: rgba(201,168,76,0.1);
+    color: var(--gold);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .font-size-btn:hover {
+    background: rgba(201,168,76,0.2);
+    border-color: var(--gold);
+  }
+
+  .font-size-btn:active {
+    transform: scale(0.95);
+  }
+
+  /* Font size classes */
+  .card-back .answer-block.font-small .block-text { font-size: 13px; }
+  .card-back .answer-block.font-medium .block-text { font-size: 14px; }
+  .card-back .answer-block.font-large .block-text { font-size: 16px; }
+  .card-back .answer-block.font-xlarge .block-text { font-size: 18px; }
+
+  .card-front.font-small .question-text { font-size: 20px; }
+  .card-front.font-medium .question-text { font-size: 22px; }
+  .card-front.font-large .question-text { font-size: 24px; }
+  .card-front.font-xlarge .question-text { font-size: 26px; }
+
+
+  .btn-track {
+    padding: 10px 18px;
+    font-size: 13px;
+    min-height: 44px;
+    cursor: pointer;
+  }
+
+  .btn-studied {
+    background: rgba(26, 71, 49, 0.15);
+    border-color: rgba(26, 71, 49, 0.4);
+    color: #5fbd8a;
+  }
+
+  .btn-studied:hover {
+    background: rgba(26, 71, 49, 0.25);
+    border-color: #5fbd8a;
+  }
+
+  .btn-revision {
+    background: rgba(139, 26, 26, 0.15);
+    border-color: rgba(139, 26, 26, 0.4);
+    color: #d89090;
+  }
+
+  .btn-revision:hover {
+    background: rgba(139, 26, 26, 0.25);
+    border-color: #d89090;
+  }
+
+  .btn-reset {
+    background: rgba(74, 85, 104, 0.15);
+    border-color: rgba(74, 85, 104, 0.4);
+    color: rgba(250, 247, 240, 0.6);
+  }
+
+  .btn-reset:hover {
+    background: rgba(74, 85, 104, 0.25);
+    border-color: rgba(250, 247, 240, 0.5);
+    color: rgba(250, 247, 240, 0.8);
+  }
+
+  /* Progress summary */
+  .tracking-summary {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .stat-studied { color: #5fbd8a; }
+  .stat-revision { color: #d89090; }
+  .stat-new { color: rgba(250,247,240,0.4); }
+
+  /* Filter controls */
+  .filter-controls {
+    width: 100%;
+    max-width: 780px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .filter-label {
+    font-size: 11px;
+    color: rgba(250,247,240,0.5);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .filter-btn {
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid rgba(201,168,76,0.2);
+    background: transparent;
+    color: rgba(201,168,76,0.5);
+    cursor: pointer;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    transition: all 0.2s;
+    min-height: 36px;
+  }
+
+  .filter-btn:hover {
+    border-color: rgba(201,168,76,0.6);
+    color: rgba(201,168,76,0.8);
+  }
+
+  .filter-btn.active {
+    background: rgba(201,168,76,0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* Mobile tracking optimizations */
+  @media (max-width: 600px) {
+    .study-badge {
+      font-size: 9px;
+      padding: 3px 8px;
+      top: 10px;
+      right: 10px;
+    }
+
+    .tracking-actions {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-track {
+      width: 100%;
+    }
+
+    .tracking-summary {
+      font-size: 10px;
+      gap: 12px;
+    }
+
+    .filter-controls {
+      margin-top: 16px;
+      gap: 8px;
+    }
+
+    .filter-label {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    /* Hide desktop controls on mobile - use gestures instead */
+    .controls {
+      display: none;
+    }
+
+    .kbd-hints {
+      display: none;
+    }
+
+    /* Hide chapter nav on mobile - use index menu instead */
+    .chapter-nav {
+      display: none;
+    }
+
+    /* Add visual hint for swipe gestures */
+    header .subtitle::after {
+      content: ' • Wischen für Navigation';
+      opacity: 0.7;
+    }
+  }
+
+  /* ── Index Menu Styles ────────────────────────────────────────────── */
+
+  .index-menu-btn {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(201,168,76,0.3);
+    background: rgba(201,168,76,0.08);
+    color: var(--gold);
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 100;
+  }
+
+  .index-menu-btn:hover {
+    background: rgba(201,168,76,0.18);
+    border-color: rgba(201,168,76,0.6);
+    transform: translateY(-1px);
+  }
+
+  .index-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 31, 61, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .index-menu-overlay.active {
+    display: flex;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .index-menu {
+    background: var(--cream);
+    border-radius: 16px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .index-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 2px solid rgba(201,168,76,0.2);
+    background: var(--navy);
+    border-radius: 16px 16px 0 0;
+  }
+
+  .index-menu-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--gold);
+    margin: 0;
+  }
+
+  .index-menu-close {
+    background: none;
+    border: none;
+    color: var(--gold);
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+
+  .index-menu-close:hover {
+    background: rgba(201,168,76,0.2);
+    transform: scale(1.1);
+  }
+
+  .index-menu-body {
+    overflow-y: auto;
+    padding: 20px 24px;
+    flex: 1;
+  }
+
+  .index-chapter-group {
+    margin-bottom: 24px;
+  }
+
+  .index-chapter-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .index-chapter-stats {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 11px;
+    color: var(--slate);
+    font-weight: 600;
+  }
+
+  .index-question-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .index-question-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+
+  .index-question-item:hover {
+    background: rgba(201,168,76,0.08);
+    border-color: rgba(201,168,76,0.2);
+  }
+
+  .index-question-item.current {
+    background: rgba(201,168,76,0.15);
+    border-color: var(--gold);
+  }
+
+  .index-question-number {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: var(--navy);
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .index-question-item.current .index-question-number {
+    background: var(--gold);
+    color: var(--navy);
+  }
+
+  .index-question-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .index-question-text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--navy);
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .index-question-status {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .index-question-status.studied {
+    color: #1a4731;
+  }
+
+  .index-question-status.revision {
+    color: #8b1a1a;
+  }
+
+  .index-question-status.new {
+    color: var(--slate);
+    opacity: 0.5;
+  }
+
+  /* Mobile index menu */
+  @media (max-width: 600px) {
+    .index-menu-btn {
+      top: 16px;
+      right: 16px;
+      padding: 6px 12px;
+      font-size: 11px;
+    }
+
+    .index-menu {
+      max-height: 95vh;
+      border-radius: 12px;
+    }
+
+    .index-menu-header {
+      padding: 16px 20px;
+    }
+
+    .index-menu-header h2 {
+      font-size: 20px;
+    }
+
+    .index-menu-body {
+      padding: 16px 20px;
+    }
+
+    .index-chapter-title {
+      font-size: 14px;
+    }
+
+    .index-question-item {
+      padding: 8px 10px;
+    }
+
+    .index-question-number {
+      width: 28px;
+      height: 28px;
+      font-size: 11px;
+    }
+
+    .index-question-text {
+      font-size: 12px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Landkreis Karlsruhe · Einbürgerung</div>
+  <h1>Lern<span>karten</span></h1>
+  <div class="subtitle">Klicken Sie auf die Karte, um die Antwort zu sehen</div>
+  <button class="index-menu-btn" onclick="openIndexMenu()" title="Alle Fragen anzeigen">
+    ☰ Index
+  </button>
+</header>
+
+<!-- Index Menu Modal -->
+<div class="index-menu-overlay" id="indexMenuOverlay" onclick="closeIndexMenu()">
+  <div class="index-menu" onclick="event.stopPropagation()">
+    <div class="index-menu-header">
+      <h2>Alle Fragen</h2>
+      <button class="index-menu-close" onclick="closeIndexMenu()">×</button>
+    </div>
+    <div class="index-menu-body" id="indexMenuBody">
+      <!-- Generated dynamically -->
+    </div>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <span class="chapter-tag" id="chapterTag">Kapitel 1</span>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="progress-label" id="progressLabel">1 / 28</span>
+  <div class="tracking-summary" id="trackingSummary"></div>
+</div>
+
+<div class="card-viewport" id="viewport">
+  <div class="card" id="card" onclick="flipCard()">
+    <div class="card-face card-front">
+      <div class="study-badge" id="studyBadge"></div>
+      <div class="corner-deco"></div>
+      <div class="card-header">
+        <span class="chapter-badge" id="frontChapter"></span>
+        <span class="q-label">FRAGE</span>
+      </div>
+      <div class="card-body">
+        <div class="question-mark">?</div>
+        <div class="question-text" id="questionText"></div>
+        <div class="flip-hint">Klicken zum Aufdecken</div>
+      </div>
+    </div>
+    <div class="card-face card-back">
+      <div class="card-header">
+        <span class="a-label">Antwort</span>
+        <span class="chapter-badge" id="backChapter"></span>
+      </div>
+      <div class="card-body">
+        <div class="answer-block original">
+          <div class="block-label">Originaltext</div>
+          <div class="block-text" id="originalText"></div>
+        </div>
+        <div class="answer-block simplified">
+          <div class="block-label">Vereinfacht</div>
+          <div class="block-text" id="simplifiedText"></div>
+        </div>
+        <div class="answer-block hint" id="hintBlock" onclick="event.stopPropagation()">
+          <div class="block-label">💡 Persönliche Notiz</div>
+          <div id="hintContent"></div>
+        </div>
+        <div class="tracking-actions">
+          <button class="btn btn-track btn-studied" onclick="event.stopPropagation(); markCardStatus('studied')">
+            ✓ Gelernt
+          </button>
+          <button class="btn btn-track btn-revision" onclick="event.stopPropagation(); markCardStatus('revision')">
+            ↺ Wiederholen
+          </button>
+          <button class="btn btn-track btn-reset" onclick="event.stopPropagation(); markCardStatus('new')">
+            × Zurücksetzen
+          </button>
+          <div class="font-size-controls" onclick="event.stopPropagation()">
+            <span class="font-size-label">A</span>
+            <button class="font-size-btn" onclick="event.stopPropagation(); changeFontSize('small')" title="Klein">A−</button>
+            <button class="font-size-btn" onclick="event.stopPropagation(); changeFontSize('medium')" title="Normal">A</button>
+            <button class="font-size-btn" onclick="event.stopPropagation(); changeFontSize('large')" title="Groß">A+</button>
+            <button class="font-size-btn" onclick="event.stopPropagation(); changeFontSize('xlarge')" title="Sehr groß">A++</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn" id="btnPrev" onclick="navigate(-1)">&#8592; Zurück</button>
+  <button class="btn btn-flip" onclick="flipCard()">Umdrehen</button>
+  <button class="btn" id="btnNext" onclick="navigate(1)">Weiter &#8594;</button>
+</div>
+
+<div class="chapter-nav">
+  <select class="chapter-dropdown" id="chapterDropdown" onchange="jumpToChapter(this.value)">
+    <option value="">Kapitel auswählen...</option>
+  </select>
+</div>
+
+<div class="filter-controls">
+  <span class="filter-label">Anzeigen:</span>
+  <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">
+    Alle
+  </button>
+  <button class="filter-btn" data-filter="revision" onclick="setFilter('revision')">
+    Nur Wiederholen
+  </button>
+  <button class="filter-btn" data-filter="new" onclick="setFilter('new')">
+    Nur Neue
+  </button>
+</div>
+
+<div class="kbd-hints">
+  <span class="kbd-hint"><kbd>←</kbd> Zurück</span>
+  <span class="kbd-hint"><kbd>→</kbd> Weiter</span>
+  <span class="kbd-hint"><kbd>Space</kbd> Umdrehen</span>
+</div>
+
+<script>
+const cards = [
+  // ── Kapitel 1: Aufbau und Organisation des Staates ──────────────────────
+  {
+    chapter: `1. Aufbau und Organisation`,
+    q: `Welche Staatsform hat die Bundesrepublik? Welche rechtliche Qualität?`,
+    original: `Staatsform: die Bundesrepublik ist ein sozialer und demokratischer Bundesstaat.\\nRechtliche Qualität: die Bundesrepublik ist ein Rechtsstaat mit Gewaltenteilung.`,
+    simple: `Deutschland ist ein demokratischer Bundesstaat – das Volk wählt die Regierung. Es ist auch ein Rechtsstaat: Alle müssen sich an Gesetze halten, auch die Regierung selbst. Die Macht ist auf drei unabhängige Bereiche aufgeteilt (Gewaltenteilung).`,
+  },
+  {
+    chapter: `1. Aufbau und Organisation`,
+    q: `Was bedeutet „Bundesstaat" und wie ist dieser aufgebaut?`,
+    original: `Bundesstaat bedeutet, dieser Staat ist „föderal" aufgebaut, d. h. er besteht aus 16 kleinen „Staaten", die als „Bundesländer" bezeichnet werden. Jedes dieser Länder hat ein eigenes Parlament: den Landtag, und eine eigene Regierung: die Landesregierung. In Baden-Württemberg finden alle fünf Jahre Wahlen statt, wobei die Bürger des Landes Abgeordnete in dieses Parlament wählen (Landtagswahl). Bund und Länder erlassen eigene Gesetze.`,
+    simple: `Deutschland besteht aus 16 Bundesländern. Jedes hat ein eigenes Parlament (Landtag) und eine eigene Regierung. In Baden-Württemberg wählt man den Landtag alle 5 Jahre. Sowohl der Bund als auch die Länder können eigene Gesetze machen.`,
+  },
+  {
+    chapter: `1. Aufbau und Organisation`,
+    q: `Was ist die wichtigste Aufgabe des Bundesrates?`,
+    original: `Im Bundesrat wirken die Länder bei der Gesetzgebung des Bundes mit, sie achten darauf, dass ihre Interessen bei neuen Bundesgesetzen gewahrt bleiben (besonders finanzielle, aber auch politische Interessen).`,
+    simple: `Der Bundesrat vertritt die 16 Bundesländer auf Bundesebene. Er stellt sicher, dass neue Bundesgesetze die Interessen der Länder nicht verletzen – besonders finanzielle und politische Interessen.`,
+  },
+  {
+    chapter: `1. Aufbau und Organisation`,
+    q: `Was ist der Bundestag?`,
+    original: `Auch der Gesamtstaat Bundesrepublik („Bund") hat ein Parlament: der Bundestag (in Berlin). Der Bundestag besteht im Gegensatz zum Bundesrat aus Vertretern der Bürger. Die Bürger der Bundesrepublik wählen diese Vertreter als Abgeordnete in den Bundestag. Die Bundestagswahlen finden alle vier Jahre statt.`,
+    simple: `Der Bundestag ist das nationale Parlament in Berlin. Die Bürger wählen ihre Vertreter (Abgeordnete) direkt alle 4 Jahre. Er besteht – anders als der Bundesrat – aus Vertretern der Bürger, nicht der Länderregierungen.`,
+  },
+  {
+    chapter: `1. Aufbau und Organisation`,
+    q: `Was ist die wichtigste Aufgabe von Bundestag bzw. Landtag?`,
+    original: `Im Bundestag bzw. Landtag werden im Wesentlichen neue Bundesgesetze bzw. Landesgesetze beschlossen, und zwar von den Abgeordneten, die von den Bürgern gewählt wurden.`,
+    simple: `Hauptaufgabe: Gesetze beschließen. Dies tun die vom Volk gewählten Abgeordneten. Der Bundestag macht Bundesgesetze, der Landtag macht Landesgesetze.`,
+  },
+  {
+    chapter: `1. Aufbau und Organisation`,
+    q: `Welche Wahlen und Parlamente gibt es noch?`,
+    original: `Es gibt in Baden-Württemberg noch die Wahlen zum Bürgermeister (alle acht Jahre) und zu folgenden Parlamenten: die Kreistage (die Bewohner eines Landkreises wählen Abgeordnete dort hinein) und Gemeinderäte (die Bewohner einer Stadt oder Gemeinde wählen). Außerdem auf europäischer Ebene: das Europaparlament (Bürger Europas wählen).`,
+    simple: `In Baden-Württemberg gibt es außerdem:\\n• Bürgermeisterwahl – alle 8 Jahre\\n• Kreistag – alle 5 Jahre\\n• Gemeinderat – alle 5 Jahre\\nAuf EU-Ebene: Europaparlament – alle 5 Jahre.`,
+  },
+  {
+    chapter: `1. Aufbau und Organisation`,
+    q: `Was versteht man unter „Demokratie"?`,
+    original: `„Alle Staatsgewalt geht vom Volke aus". Das heißt: die Bürger bestimmen in Wahlen selbst, wer in den Volksvertretungen sitzt und damit für die Gesetze verantwortlich ist, an die sich alle Bürger halten müssen.`,
+    simple: `Demokratie = das Volk hat die Macht. Die Bürger wählen ihre Vertreter, die dann Gesetze machen, an die sich alle halten müssen – auch der Staat selbst.\\nMerkesatz: „Alle Staatsgewalt geht vom Volke aus."`,
+  },
+  {
+    chapter: `1. Aufbau und Organisation`,
+    q: `Wer ist das Staatsoberhaupt? Sein wichtigstes Merkmal? Seine wichtigste Aufgabe?`,
+    original: `Der Bundespräsident. Er gehört einer Partei an, soll aber sein Amt überparteilich führen. Er repräsentiert den Staat.`,
+    simple: `Staatsoberhaupt = Bundespräsident.\\nEr handelt überparteilich (über den Parteien stehend) und repräsentiert Deutschland nach außen – z. B. bei offiziellen Anlässen und im Ausland.`,
+  },
+  {
+    chapter: `1. Aufbau und Organisation`,
+    q: `Was bedeutet: Rechtsstaat und Gewaltenteilung?`,
+    original: `Die staatliche Macht („Gewalt") ist auf drei unabhängige Einrichtungen aufgeteilt: in den Parlamenten („Legislative") werden die Gesetze beschlossen. Die Verwaltung („Exekutive") führt die Gesetze aus und ist an diese gebunden. Die Gerichte („Judikative") können prüfen, ob sich das Parlament und die Verwaltung an das Recht (daher „Rechtsstaat") und an die Gesetze halten. Wenn nicht, sorgen die Gerichte dafür, dass die Gesetze eingehalten werden.`,
+    simple: `3 unabhängige Gewalten:\\n• Legislative (Parlament) → macht Gesetze\\n• Exekutive (Regierung/Verwaltung) → führt Gesetze aus\\n• Judikative (Gerichte) → kontrolliert die Einhaltung\\n\\nKeine Einrichtung kann alleine alles bestimmen.`,
+  },
+  // ── Kapitel 2: Wahlen ────────────────────────────────────────────────────
+  {
+    chapter: `2. Wahlen`,
+    q: `Was sind die wichtigsten Merkmale von Wahlen zu den Parlamenten?`,
+    original: `allgemein: jeder Deutsche darf wählen, es kommt nicht an auf Geschlecht, Religion, Vermögen usw.\\nfrei: jeder darf die Partei wählen, die er will; es herrscht keine Wahlpflicht\\ngleich: jede Stimme hat das gleiche Gewicht, keine Stimme zählt mehr als die andere\\ngeheim: niemand muss sagen oder zeigen, welche Partei er gewählt hat`,
+    simple: `Die 4 Wahlgrundsätze:\\n• Allgemein – alle Deutschen dürfen wählen, unabhängig von Geschlecht, Religion oder Vermögen\\n• Frei – keine Wahlpflicht, jeder wählt wen er möchte\\n• Gleich – jede Stimme zählt gleich viel\\n• Geheim – niemand muss seine Wahl offenbaren`,
+  },
+  {
+    chapter: `2. Wahlen`,
+    q: `Welche Wahlen finden statt und nach welcher Zeit?`,
+    original: `Wahlen zum Bundestag alle vier Jahre; Europaparlament, Landtag, Kreistag und Gemeinderat in Baden-Württemberg alle fünf Jahre; Bürgermeister in Baden-Württemberg alle acht Jahre.`,
+    simple: `Merkhilfe:\\n• 4 Jahre → Bundestag\\n• 5 Jahre → EU-Parlament, Landtag, Kreistag, Gemeinderat (BW)\\n• 8 Jahre → Bürgermeister (Baden-Württemberg)`,
+  },
+  // ── Kapitel 3: Grundgesetz ───────────────────────────────────────────────
+  {
+    chapter: `3. Grundgesetz`,
+    q: `Was sind die wichtigsten Inhalte des Grundgesetzes?`,
+    original: `Wie der Staat aufgebaut ist - welche Staatsorgane es gibt (Parlamente u. a.) - Form des Rechtsstaates und des Bundesstaates - die Grundrechte der Bürger - Wahl des Bundeskanzlers, des Bundespräsidenten, der Minister und anderer Repräsentanten.`,
+    simple: `Das Grundgesetz ist Deutschlands Verfassung – das höchste Gesetz. Es regelt:\\n• Den Aufbau des Staates (Parlamente, Regierung, Gerichte)\\n• Die Grundrechte jedes Bürgers\\n• Wie Kanzler, Präsident und Minister bestimmt werden`,
+  },
+  {
+    chapter: `3. Grundgesetz`,
+    q: `Wie lauten einige Grundrechte?`,
+    original: `Menschenwürde - Recht auf Leben - Gleichheitsgrundsatz - Gleichbehandlung von Mann und Frau - Glaubensfreiheit - Gewissensfreiheit - Meinungsfreiheit`,
+    simple: `Die wichtigsten Grundrechte:\\n• Menschenwürde (Art. 1) – unantastbar\\n• Recht auf Leben\\n• Gleichheit vor dem Gesetz\\n• Gleichberechtigung von Mann und Frau\\n• Glaubens- und Gewissensfreiheit\\n• Meinungsfreiheit`,
+  },
+  {
+    chapter: `3. Grundgesetz`,
+    q: `Was muss derjenige anerkennen, der die Freiheiten des Grundgesetzes hier in Anspruch nimmt?`,
+    original: `Dass es verboten ist, eine andere staatliche Ordnung als die bestehende hier anzustreben (z. B. Mullahstaat oder Diktatur) durch Unterstützung terroristischer Gruppen oder religiöser Extremisten.`,
+    simple: `Wer in Deutschland die Grundrechte genießt, muss die demokratische Ordnung akzeptieren. Es ist verboten, eine Diktatur, einen Gottesstaat oder andere extremistische Staatsformen anzustreben oder solche Gruppen zu unterstützen.`,
+  },
+  {
+    chapter: `3. Grundgesetz`,
+    q: `Was gilt hinsichtlich der Religionen?`,
+    original: `Staat und Religion sind getrennt, d. h. der Staat wird nicht nach religiösen Grundsätzen regiert. Aber jeder Einzelne darf seine Religion frei ausüben, weil der Staat neutral ist.`,
+    simple: `Trennung von Staat und Religion:\\n• Der Staat macht keine religiösen Gesetze\\n• Jeder darf seine Religion frei ausüben\\n• Der Staat ist religiös neutral – er bevorzugt keine Religion`,
+  },
+  // ── Kapitel 4: Grund- und Menschenrechte ────────────────────────────────
+  {
+    chapter: `4. Grund- und Menschenrechte`,
+    q: `Was ist das Menschenbild des Grundgesetzes?`,
+    original: `Das eines freien, selbstbestimmten Menschen, der aber die Verpflichtungen und Gesetze, die ihm der Staat auferlegt und vorgibt, beachtet.`,
+    simple: `Das Grundgesetz sieht jeden Menschen als frei und selbstbestimmt. Aber: Mit Freiheit kommt Verantwortung – jeder muss die staatlichen Gesetze und Pflichten respektieren.`,
+  },
+  {
+    chapter: `4. Grund- und Menschenrechte`,
+    q: `Was bedeutet: Menschenwürde?`,
+    original: `Der Staat darf niemanden unmenschlich behandeln. „Der Mensch wird geachtet, weil er Mensch ist".`,
+    simple: `Jeder Mensch hat einen unveräußerlichen Wert, allein weil er ein Mensch ist. Der Staat muss jeden ohne Ausnahme mit Würde behandeln – niemand darf unmenschlich behandelt werden.`,
+  },
+  {
+    chapter: `4. Grund- und Menschenrechte`,
+    q: `Was bedeutet: Gleichheit vor dem Gesetz?`,
+    original: `Vor dem Gesetz sind alle Menschen gleich, niemand darf ohne Grund ungleich behandelt werden.`,
+    simple: `Alle Menschen in Deutschland sind vor dem Gesetz gleich. Niemand darf wegen Herkunft, Religion, Geschlecht oder anderen Merkmalen ohne Grund schlechter behandelt werden.`,
+  },
+  {
+    chapter: `4. Grund- und Menschenrechte`,
+    q: `Was bedeutet: Recht auf Leben und körperliche Unversehrtheit?`,
+    original: `Das menschliche Leben stellt den höchsten Wert des Grundgesetzes dar. Der Staat darf niemanden töten und muss jeden bestrafen, der jemanden tötet oder jemanden anderen verletzt.`,
+    simple: `Das Leben ist der höchste Wert im Grundgesetz. Der Staat schützt das Leben und die körperliche Unversehrtheit jedes Menschen. Töten und Körperverletzung werden bestraft.`,
+  },
+  {
+    chapter: `4. Grund- und Menschenrechte`,
+    q: `Was bedeutet: Meinungsfreiheit?`,
+    original: `Jeder darf seine Meinung öffentlich ohne Angst vor Strafe äußern, es sei denn, er ruft zum gewaltsamen Umsturz des Staates oder seiner freiheitlichen Ordnung auf.`,
+    simple: `Man darf in Deutschland frei seine Meinung sagen – ohne Angst vor Strafe.\\nAUSNAHME: Wer zur Gewalt gegen den Staat oder seine demokratische Ordnung aufruft, ist nicht geschützt.`,
+  },
+  {
+    chapter: `4. Grund- und Menschenrechte`,
+    q: `Was bedeutet: Religionsfreiheit?`,
+    original: `Jeder darf seine Religion frei ausüben. Das bedeutet aber nicht, dass er anderen, auch Familienmitgliedern, seine Religion aufzwingen darf.`,
+    simple: `Jeder kann seine eigene Religion frei leben. Aber niemand darf anderen seine Religion aufzwingen – auch nicht den eigenen Familienmitgliedern.`,
+  },
+  {
+    chapter: `4. Grund- und Menschenrechte`,
+    q: `Wie sieht das Grundgesetz Mann und Frau?`,
+    original: `Nach dem Grundgesetz sind Mann und Frau gleichberechtigt. Der Mann steht nicht über der Frau.`,
+    simple: `Mann und Frau sind in Deutschland rechtlich vollständig gleichgestellt. Es gibt keine gesetzliche Vorrangstellung des Mannes – beide haben dieselben Rechte.`,
+  },
+  {
+    chapter: `4. Grund- und Menschenrechte`,
+    q: `Was wird von jemandem erwartet, der eingebürgert werden will?`,
+    original: `Dass er sich zum Grundgesetz, zum Menschenbild des Grundgesetzes und zu den Gesetzen dieses Staates bekennt und sie achtet. Die Gesetze der Bundesrepublik stehen über religiösen Vorschriften.`,
+    simple: `Wer Deutscher werden will, muss:\\n• Das Grundgesetz und alle deutschen Gesetze anerkennen und respektieren\\n• Verstehen und akzeptieren: deutsches Recht steht über religiösen Vorschriften`,
+  },
+  // ── Kapitel 5: Parlament, Regierung, Opposition ──────────────────────────
+  {
+    chapter: `5. Parlament, Regierung, Opposition`,
+    q: `Definieren Sie „Parlament"!`,
+    original: `Parlament bedeutet: Volksvertretung`,
+    simple: `Das Parlament ist die Volksvertretung – die vom Volk gewählten Vertreter, die im Namen der Bürger Gesetze beschließen.`,
+  },
+  {
+    chapter: `5. Parlament, Regierung, Opposition`,
+    q: `Was bedeutet „parlamentarische Opposition"?`,
+    original: `In den Parlamenten sind Parteien vertreten, die die Regierung bilden, weil sie bei den Wahlen die meisten Stimmen erhalten haben (Regierungsparteien). Daneben sitzen Parteien im Parlament, die bei den Wahlen unterlegen sind, weil sie weniger Stimmen erhalten haben als die Regierungsparteien (Oppositionsparteien). Die Oppositionsparteien nennt man auch die „parlamentarische Opposition", weil sie im Parlament sind.`,
+    simple: `Opposition = Parteien im Parlament, die NICHT in der Regierung sind. Sie haben bei der Wahl weniger Stimmen bekommen als die Regierungsparteien. Sie sitzen trotzdem im Parlament und bilden ein politisches Gegengewicht.`,
+  },
+  {
+    chapter: `5. Parlament, Regierung, Opposition`,
+    q: `Was ist die wichtigste Aufgabe der Opposition?`,
+    original: `Die Opposition soll die Arbeit der Regierung kontrollieren. Außerdem soll sie beitragen zur politischen Meinungsbildung in der Bevölkerung und eigene politische Vorschläge machen.`,
+    simple: `3 Aufgaben der Opposition:\\n1. Die Arbeit der Regierung kontrollieren\\n2. Zur politischen Meinungsbildung in der Bevölkerung beitragen\\n3. Eigene politische Vorschläge machen`,
+  },
+  {
+    chapter: `5. Parlament, Regierung, Opposition`,
+    q: `Woraus besteht die Bundes- bzw. Landesregierung?`,
+    original: `Die Regierung besteht aus den Bundesministern und dem Bundeskanzler (Bundesregierung) bzw. den Landesministern und dem Ministerpräsidenten (Landesregierungen). Bundeskanzler und Ministerpräsident nennt man auch „Regierungschef".`,
+    simple: `Bundesregierung = Bundeskanzler + Bundesminister\\nLandesregierung = Ministerpräsident + Landesminister\\n\\nBundeskanzler und Ministerpräsident werden auch „Regierungschef" genannt.`,
+  },
+  {
+    chapter: `5. Parlament, Regierung, Opposition`,
+    q: `Von wem wird die Regierung gewählt?`,
+    original: `Die Regierungen werden nicht vom Volk gewählt! Das Volk wählt nur die Parlamente. Bundeskanzler bzw. Ministerpräsident werden vom Parlament (Bundestag bzw. Landtag) gewählt. Die Minister werden nicht gewählt, sondern vom Regierungschef bestimmt.`,
+    simple: `Wichtig:\\n• Das VOLK wählt → das Parlament\\n• Das PARLAMENT wählt → den Bundeskanzler / Ministerpräsident\\n• Der REGIERUNGSCHEF bestimmt → die Minister (keine Wahl!)\\n\\nDas Volk wählt die Regierung NICHT direkt!`,
+  },
+  {
+    chapter: `5. Parlament, Regierung, Opposition`,
+    q: `Wie kann die Regierung abgelöst werden?`,
+    original: `Vor allem dadurch, dass bei Wahlen andere Parteien die Mehrheit bekommen, die dann mit ihrer Mehrheit die neue Regierung bilden.`,
+    simple: `Wenn bei einer Wahl andere Parteien mehr Stimmen bekommen, bilden sie die neue Mehrheit im Parlament und damit die neue Regierung. Das Parlament kann den Regierungschef auch direkt abwählen.`,
+  },
+  {
+    chapter: `5. Parlament, Regierung, Opposition`,
+    q: `Ist die Regierung in ihrer Arbeit unabhängig?`,
+    original: `Nein. Die Regierung ist dem Parlament, von dessen Mehrheit der Regierungschef gewählt wird, verantwortlich. Das Parlament könnte auch einen anderen Regierungschef wählen.`,
+    simple: `Nein – die Regierung ist nicht unabhängig. Sie muss sich vor dem Parlament verantworten und kann vom Parlament abgelöst werden. Die Mehrheit im Parlament hat den Regierungschef gewählt und kann ihn auch abwählen.`,
+  },
+  // ── Kapitel 6: Gerichte ──────────────────────────────────────────────────
+  {
+    chapter: `6. Gerichte`,
+    q: `Was ist das wichtigste Merkmal deutscher Gerichte?`,
+    original: `Richter sind unabhängig.`,
+    simple: `Das wichtigste Merkmal: Richter sind unabhängig. Sie urteilen nur nach dem Gesetz – nicht nach politischen Wünschen, Parteiinteressen oder öffentlicher Meinung.`,
+  },
+  {
+    chapter: `6. Gerichte`,
+    q: `Was bedeutet „Unabhängigkeit der Gerichte"?`,
+    original: `Es bedeutet, dass die Richter nur an Grundgesetz, Gesetze und Recht gebunden sind und nicht nach ihrer persönlichen Meinung oder der Meinung der Politiker oder der Öffentlichkeit entscheiden dürfen. Niemand darf ihnen vorschreiben, wer verurteilt wird oder wer vor Gericht gewinnen oder verlieren soll, nur das Gesetz.`,
+    simple: `Unabhängig = Richter entscheiden NUR nach dem Gesetz. Niemand – kein Politiker, keine Regierung, keine öffentliche Meinung – darf ihnen vorschreiben, wie sie urteilen sollen.`,
+  },
+  {
+    chapter: `6. Gerichte`,
+    q: `Welches ist das höchste deutsche Gericht?`,
+    original: `Das Bundesverfassungsgericht.`,
+    simple: `Das Bundesverfassungsgericht ist das höchste Gericht Deutschlands. Es prüft, ob Gesetze und staatliches Handeln mit dem Grundgesetz vereinbar sind. Seine Entscheidungen sind für alle verbindlich.`,
+  }
+];
+
+let current = 0;
+let isFlipped = false;
+let currentFilter = "all"; // "all", "revision", "new"
+
+// Load tracking data from localStorage or initialize
+let cardTracking = JSON.parse(localStorage.getItem('einbuergerung-tracking')) || {};
+
+// Initialize tracking for all cards if not exists
+function initializeTracking() {
+  if (!cardTracking.version) {
+    cardTracking = { version: "1.0", cards: {} };
+  }
+  // Ensure all cards have tracking entry
+  cards.forEach((_, index) => {
+    if (!cardTracking.cards[index]) {
+      cardTracking.cards[index] = {
+        status: "new",
+        lastViewed: null,
+        viewCount: 0,
+        flipCount: 0,
+        hint: ""  // Add hint field
+      };
+    } else if (!cardTracking.cards[index].hint) {
+      // Add hint to existing cards
+      cardTracking.cards[index].hint = "";
+    }
+  });
+  saveTracking();
+}
+
+function saveTracking() {
+  localStorage.setItem('einbuergerung-tracking', JSON.stringify(cardTracking));
+}
+
+// Font size management
+let currentFontSize = localStorage.getItem('einbuergerung-font-size') || 'medium';
+
+function changeFontSize(size) {
+  currentFontSize = size;
+  localStorage.setItem('einbuergerung-font-size', size);
+  applyFontSize();
+}
+
+function applyFontSize() {
+  const cardFront = document.querySelector('.card-front');
+  const answerBlocks = document.querySelectorAll('.answer-block');
+
+  // Remove all font size classes
+  cardFront.classList.remove('font-small', 'font-medium', 'font-large', 'font-xlarge');
+  answerBlocks.forEach(block => {
+    block.classList.remove('font-small', 'font-medium', 'font-large', 'font-xlarge');
+  });
+
+  // Add current font size class
+  cardFront.classList.add(`font-${currentFontSize}`);
+  answerBlocks.forEach(block => {
+    block.classList.add(`font-${currentFontSize}`);
+  });
+}
+
+// Hint management
+function updateHintDisplay() {
+  const hint = cardTracking.cards[current]?.hint || "";
+  const hintContent = document.getElementById('hintContent');
+
+  if (hint) {
+    // Show saved hint
+    hintContent.innerHTML = `
+      <div class="hint-display">${hint}</div>
+      <div class="hint-actions">
+        <button class="hint-btn" onclick="event.stopPropagation(); editHint()">✏️ Bearbeiten</button>
+        <button class="hint-btn" onclick="event.stopPropagation(); deleteHint()">🗑️ Löschen</button>
+      </div>
+    `;
+  } else {
+    // Show add hint button
+    hintContent.innerHTML = `
+      <button class="hint-btn" onclick="event.stopPropagation(); addHint()">+ Notiz hinzufügen</button>
+    `;
+  }
+}
+
+function addHint() {
+  const hintContent = document.getElementById('hintContent');
+  hintContent.innerHTML = `
+    <textarea class="hint-textarea" id="hintTextarea" placeholder="Schreiben Sie hier Ihre persönliche Notiz oder Eselsbrücke..."></textarea>
+    <div class="hint-actions">
+      <button class="hint-btn" onclick="event.stopPropagation(); saveHint()">💾 Speichern</button>
+      <button class="hint-btn" onclick="event.stopPropagation(); cancelHint()">✖️ Abbrechen</button>
+    </div>
+  `;
+  setTimeout(() => document.getElementById('hintTextarea').focus(), 50);
+}
+
+function editHint() {
+  const currentHint = cardTracking.cards[current]?.hint || "";
+  const hintContent = document.getElementById('hintContent');
+  hintContent.innerHTML = `
+    <textarea class="hint-textarea" id="hintTextarea">${currentHint}</textarea>
+    <div class="hint-actions">
+      <button class="hint-btn" onclick="event.stopPropagation(); saveHint()">💾 Speichern</button>
+      <button class="hint-btn" onclick="event.stopPropagation(); cancelHint()">✖️ Abbrechen</button>
+    </div>
+  `;
+  setTimeout(() => document.getElementById('hintTextarea').focus(), 50);
+}
+
+function saveHint() {
+  const hintText = document.getElementById('hintTextarea').value.trim();
+  if (cardTracking.cards[current]) {
+    cardTracking.cards[current].hint = hintText;
+    saveTracking();
+    updateHintDisplay();
+  }
+}
+
+function deleteHint() {
+  if (confirm('Möchten Sie diese Notiz wirklich löschen?')) {
+    if (cardTracking.cards[current]) {
+      cardTracking.cards[current].hint = "";
+      saveTracking();
+      updateHintDisplay();
+    }
+  }
+}
+
+function cancelHint() {
+  updateHintDisplay();
+}
+
+
+
+function getChapters() {
+  const seen = new Set();
+  const chapters = [];
+  cards.forEach((c, i) => {
+    if (!seen.has(c.chapter)) {
+      seen.add(c.chapter);
+      chapters.push({ label: c.chapter, index: i });
+    }
+  });
+  return chapters;
+}
+
+function buildChapterNav() {
+  const dropdown = document.getElementById('chapterDropdown');
+  getChapters().forEach(ch => {
+    const option = document.createElement('option');
+    option.value = ch.index;
+    option.textContent = ch.label;
+    dropdown.appendChild(option);
+  });
+}
+
+function jumpToChapter(startIndex) {
+  if (startIndex !== "") {
+    goTo(parseInt(startIndex));
+  }
+}
+
+function updateChapterNav() {
+  const dropdown = document.getElementById('chapterDropdown');
+  const chapters = getChapters();
+
+  // Find which chapter the current card belongs to
+  for (let i = 0; i < chapters.length; i++) {
+    const start = chapters[i].index;
+    const end = i + 1 < chapters.length ? chapters[i + 1].index : cards.length;
+    if (current >= start && current < end) {
+      dropdown.value = start;
+      break;
+    }
+  }
+}
+
+function markCardStatus(status) {
+  if (cardTracking.cards[current]) {
+    cardTracking.cards[current].status = status;
+    cardTracking.cards[current].lastViewed = Date.now();
+    saveTracking();
+    updateTrackingUI();
+    // Stay on current card (user preference)
+    // No auto-advance - user can manually click Next when ready
+  }
+}
+
+function updateTrackingUI() {
+  // Update badge
+  const badge = document.getElementById('studyBadge');
+  const status = cardTracking.cards[current]?.status || "new";
+  badge.className = `study-badge ${status}`;
+  badge.textContent = status === "studied" ? "✓ Gelernt" :
+                      status === "revision" ? "↺ Wiederholen" : "";
+  badge.style.display = status === "new" ? "none" : "block";
+
+  // Update progress summary
+  updateProgressSummary();
+
+  // Update hint display
+  updateHintDisplay();
+
+  // Update navigation buttons if filter is active
+  if (currentFilter !== "all") {
+    updateNavigationButtons();
+  }
+}
+
+function updateProgressSummary() {
+  const stats = { studied: 0, revision: 0, new: 0 };
+  cards.forEach((_, index) => {
+    const status = cardTracking.cards[index]?.status || "new";
+    stats[status]++;
+  });
+
+  document.getElementById('trackingSummary').innerHTML = `
+    <span class="stat-studied">✓ ${stats.studied} Gelernt</span>
+    <span class="stat-revision">↺ ${stats.revision} Wiederholen</span>
+    <span class="stat-new">– ${stats.new} Neu</span>
+  `;
+}
+
+function setFilter(filter) {
+  currentFilter = filter;
+
+  // Update button active states
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === filter);
+  });
+
+  // If current card doesn't match filter, go to next matching card
+  if (!cardMatchesFilter(current)) {
+    const nextCard = findNextMatchingCard(current);
+    if (nextCard !== -1) {
+      goTo(nextCard);
+    }
+  }
+
+  updateNavigationButtons();
+}
+
+function cardMatchesFilter(index) {
+  if (currentFilter === "all") return true;
+  const status = cardTracking.cards[index]?.status || "new";
+  if (currentFilter === "revision") return status === "revision";
+  if (currentFilter === "new") return status === "new";
+  return true;
+}
+
+function findNextMatchingCard(fromIndex) {
+  // Search forward from current position
+  for (let i = fromIndex + 1; i < cards.length; i++) {
+    if (cardMatchesFilter(i)) return i;
+  }
+  // Wrap around to beginning
+  for (let i = 0; i < fromIndex; i++) {
+    if (cardMatchesFilter(i)) return i;
+  }
+  return -1; // No matching cards
+}
+
+function findPrevMatchingCard(fromIndex) {
+  // Search backward from current position
+  for (let i = fromIndex - 1; i >= 0; i--) {
+    if (cardMatchesFilter(i)) return i;
+  }
+  // Wrap around to end
+  for (let i = cards.length - 1; i > fromIndex; i--) {
+    if (cardMatchesFilter(i)) return i;
+  }
+  return -1; // No matching cards
+}
+
+function updateNavigationButtons() {
+  // Disable prev/next if no matching cards in that direction
+  const prevMatch = findPrevMatchingCard(current);
+  const nextMatch = findNextMatchingCard(current);
+
+  document.getElementById('btnPrev').disabled = prevMatch === -1;
+  document.getElementById('btnNext').disabled = nextMatch === -1;
+}
+
+function render() {
+  const c = cards[current];
+  // Replace \n with spaces in question text for clean display
+  document.getElementById('questionText').textContent = c.q.replace(/\\n/g, ' ');
+  // Replace \n with <br> for proper line breaks in answers
+  document.getElementById('originalText').innerHTML = c.original.replace(/\\n/g, '<br>');
+  document.getElementById('simplifiedText').innerHTML = c.simple.replace(/\\n/g, '<br>');
+  document.getElementById('frontChapter').textContent = c.chapter;
+  document.getElementById('backChapter').textContent = c.chapter;
+
+  const pct = ((current + 1) / cards.length * 100).toFixed(1);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = (current + 1) + ' / ' + cards.length;
+  document.getElementById('chapterTag').textContent = c.chapter;
+
+  document.getElementById('btnPrev').disabled = current === 0;
+  document.getElementById('btnNext').disabled = current === cards.length - 1;
+
+  updateChapterNav();
+  updateTrackingUI();  // Add tracking UI update
+  applyFontSize();  // Apply saved font size
+}
+
+function flipCard() {
+  isFlipped = !isFlipped;
+  document.getElementById('card').classList.toggle('flipped', isFlipped);
+
+  // Track flip
+  if (isFlipped && cardTracking.cards[current]) {
+    cardTracking.cards[current].flipCount++;
+    saveTracking();
+  }
+}
+
+function goTo(index) {
+  // Track previous card before navigating
+  if (current !== index && cardTracking.cards[current]) {
+    cardTracking.cards[current].lastViewed = Date.now();
+    cardTracking.cards[current].viewCount++;
+    saveTracking();
+  }
+
+  const vp = document.getElementById('viewport');
+  vp.classList.add('sliding-out');
+  setTimeout(() => {
+    current = index;
+    isFlipped = false;
+    document.getElementById('card').classList.remove('flipped');
+    render();
+    vp.classList.remove('sliding-out');
+    vp.classList.add('sliding-in');
+    setTimeout(() => vp.classList.remove('sliding-in'), 250);
+  }, 180);
+}
+
+function navigate(dir) {
+  let nextIndex;
+  if (currentFilter === "all") {
+    // Normal navigation
+    nextIndex = current + dir;
+    if (nextIndex < 0 || nextIndex >= cards.length) return;
+  } else {
+    // Filter-aware navigation
+    nextIndex = dir > 0 ? findNextMatchingCard(current) : findPrevMatchingCard(current);
+    if (nextIndex === -1) return;
+  }
+  goTo(nextIndex);
+}
+
+document.addEventListener('keydown', e => {
+  // Ignore keyboard shortcuts when typing in input fields
+  const activeElement = document.activeElement;
+  const isTyping = activeElement && (
+    activeElement.tagName === 'INPUT' ||
+    activeElement.tagName === 'TEXTAREA' ||
+    activeElement.tagName === 'SELECT'
+  );
+
+  if (isTyping) return; // Don't process shortcuts while typing
+
+  if (e.key === 'ArrowRight') navigate(1);
+  else if (e.key === 'ArrowLeft') navigate(-1);
+  else if (e.key === ' ') { e.preventDefault(); flipCard(); }
+  else if (e.key === 'Escape') {
+    const overlay = document.getElementById('indexMenuOverlay');
+    if (overlay.classList.contains('active')) {
+      closeIndexMenu();
+    }
+  }
+});
+
+// Add swipe gesture support
+let touchStartX = 0;
+let touchEndX = 0;
+let touchStartY = 0;
+let touchEndY = 0;
+
+const cardElement = document.getElementById('card');
+
+cardElement.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, false);
+
+cardElement.addEventListener('touchend', e => {
+  touchEndX = e.changedTouches[0].screenX;
+  touchEndY = e.changedTouches[0].screenY;
+  handleSwipe();
+}, false);
+
+function handleSwipe() {
+  const swipeThreshold = 50; // Minimum distance for a swipe
+  const deltaX = touchEndX - touchStartX;
+  const deltaY = touchEndY - touchStartY;
+
+  // Only trigger swipe if horizontal movement is greater than vertical
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    if (Math.abs(deltaX) > swipeThreshold) {
+      if (deltaX > 0) {
+        // Swipe right - go to previous card
+        navigate(-1);
+      } else {
+        // Swipe left - go to next card
+        navigate(1);
+      }
+    }
+  }
+}
+
+// Index Menu Functions
+function openIndexMenu() {
+  const overlay = document.getElementById('indexMenuOverlay');
+  const body = document.getElementById('indexMenuBody');
+
+  // Build the index content
+  body.innerHTML = buildIndexContent();
+
+  // Show the overlay
+  overlay.classList.add('active');
+
+  // Prevent body scroll
+  document.body.style.overflow = 'hidden';
+}
+
+function closeIndexMenu() {
+  const overlay = document.getElementById('indexMenuOverlay');
+  overlay.classList.remove('active');
+
+  // Restore body scroll
+  document.body.style.overflow = '';
+}
+
+function buildIndexContent() {
+  const chapters = getChapters();
+  let html = '';
+
+  chapters.forEach((ch, chIndex) => {
+    const start = ch.index;
+    const end = chIndex + 1 < chapters.length ? chapters[chIndex + 1].index : cards.length;
+    const chapterCards = cards.slice(start, end);
+
+    // Calculate chapter stats
+    const stats = { studied: 0, revision: 0, new: 0 };
+    for (let i = start; i < end; i++) {
+      const status = cardTracking.cards[i]?.status || "new";
+      stats[status]++;
+    }
+
+    html += `<div class="index-chapter-group">`;
+    html += `<div class="index-chapter-title">`;
+    html += `${ch.label}`;
+    html += `<span class="index-chapter-stats">(${stats.studied} ✓ / ${stats.revision} ↺ / ${stats.new} −)</span>`;
+    html += `</div>`;
+    html += `<ul class="index-question-list">`;
+
+    chapterCards.forEach((card, localIndex) => {
+      const globalIndex = start + localIndex;
+      const status = cardTracking.cards[globalIndex]?.status || "new";
+      const isCurrent = globalIndex === current;
+
+      let statusText = '';
+      let statusClass = status;
+      if (status === 'studied') statusText = '✓ Gelernt';
+      else if (status === 'revision') statusText = '↺ Wiederholen';
+      else statusText = '− Neu';
+
+      html += `<li class="index-question-item ${isCurrent ? 'current' : ''}" onclick="jumpToCard(${globalIndex})">`;
+      html += `<div class="index-question-number">${globalIndex + 1}</div>`;
+      html += `<div class="index-question-content">`;
+      html += `<div class="index-question-text">${card.q.replace(/\\n/g, ' ')}</div>`;
+      html += `<div class="index-question-status ${statusClass}">${statusText}</div>`;
+      html += `</div>`;
+      html += `</li>`;
+    });
+
+    html += `</ul>`;
+    html += `</div>`;
+  });
+
+  return html;
+}
+
+function jumpToCard(index) {
+  closeIndexMenu();
+  goTo(index);
+}
+
+initializeTracking();  // Initialize tracking before rendering
+buildChapterNav();
+applyFontSize();  // Apply saved font size on load
+render();
+
+// Register service worker for offline support
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js')
+    .then(() => console.log('Service Worker registered'))
+    .catch(err => console.log('Service Worker registration failed:', err));
+}
+</script>
+</body>
+</html>
