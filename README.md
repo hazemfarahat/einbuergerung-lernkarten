@@ -26,8 +26,3 @@ Upload these files to Home Assistant:
 - Swipe gestures on mobile
 - Quick jump index menu
 
-## Usage
-
-1. Upload files to Home Assistant `/config/www/einbuergerung/`
-2. Access via `https://home.farahat.org/local/einbuergerung/Einbuergerung_Lernkarten.html`
-3. Add to iPhone home screen for PWA experience
