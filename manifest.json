@@ -1,8 +1,8 @@
 {
   "name": "Einbürgerung Lernkarten",
   "short_name": "Einbürgerung",
-  "description": "Lernkarten für die deutsche Einbürgerung - Landkreis Karlsruhe",
-  "start_url": "./Einbuergerung_Lernkarten.html",
+  "description": "Private Lernhilfe für die Einbürgerung (inoffizielle Quelle)",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f1f3d",
   "theme_color": "#0f1f3d",

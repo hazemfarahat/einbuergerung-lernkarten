@@ -50,6 +50,7 @@
     width: 100%;
     max-width: 780px;
     position: relative;
+    padding: 50px 140px 0; /* Top padding for buttons, side padding for text clearance */
   }
   header .eyebrow {
     font-family: 'Source Sans 3', sans-serif;
@@ -75,7 +76,32 @@
     letter-spacing: 1px;
   }
 
-  /* ── Progress ── */
+  /* Install button (left side of header) */
+  .install-btn {
+    position: absolute;
+    top: 8px;
+    left: 16px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid rgba(201,168,76,0.3);
+    background: rgba(201,168,76,0.08);
+    color: var(--gold);
+    cursor: pointer;
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    transition: all 0.2s;
+    min-height: 36px;
+    z-index: 100;
+  }
+
+  .install-btn:hover {
+    background: rgba(201,168,76,0.15);
+    border-color: var(--gold);
+  }
+
+  /* Progress */
   .progress-wrap {
     width: 100%;
     max-width: 780px;
@@ -128,6 +154,7 @@
     transform-style: preserve-3d;
     transition: transform 0.65s cubic-bezier(0.23, 1, 0.32, 1);
     cursor: pointer;
+    touch-action: pan-y pinch-zoom; /* Allow vertical scroll but handle horizontal swipes */
   }
   .card.flipped { transform: rotateY(180deg); }
 
@@ -457,6 +484,13 @@
     gap: 16px;
     flex-wrap: wrap;
     justify-content: center;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .kbd-hints.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(20px);
   }
   .kbd-hint {
     font-size: 11px;
@@ -801,8 +835,8 @@
 
   .index-menu-btn {
     position: absolute;
-    top: 24px;
-    right: 24px;
+    top: 8px;
+    right: 16px;
     padding: 8px 16px;
     border-radius: 8px;
     border: 1px solid rgba(201,168,76,0.3);
@@ -1068,17 +1102,448 @@
       font-size: 12px;
     }
   }
+
+  /* ══════════════════════════════════════════════════════════════
+     Install Instructions Modal
+     ══════════════════════════════════════════════════════════════ */
+
+  .install-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .install-menu-overlay.active {
+    display: flex;
+  }
+
+  .install-menu {
+    width: 100%;
+    max-width: 640px;
+    max-height: 90vh;
+    background: var(--cream);
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .install-menu-header {
+    background: var(--navy);
+    color: var(--cream);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+  }
+
+  .install-menu-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--gold);
+    margin: 0;
+  }
+
+  .install-menu-close {
+    background: transparent;
+    border: none;
+    color: var(--cream);
+    font-size: 32px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+  }
+
+  .install-menu-close:hover {
+    color: var(--gold);
+  }
+
+  .install-menu-body {
+    padding: 24px;
+    overflow-y: auto;
+    color: var(--navy);
+  }
+
+  .install-intro {
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0 0 24px 0;
+    color: var(--slate);
+    font-weight: 500;
+  }
+
+  .install-section {
+    margin-bottom: 28px;
+  }
+
+  .install-section h3 {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(201,168,76,0.2);
+  }
+
+  .install-section ol {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  .install-section li {
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 8px;
+    color: var(--slate);
+  }
+
+  .install-section li strong {
+    color: var(--navy);
+    font-weight: 600;
+  }
+
+  .install-benefits {
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 24px;
+  }
+
+  .install-benefits h3 {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0 0 12px 0;
+  }
+
+  .install-benefits ul {
+    margin: 0;
+    padding-left: 20px;
+    list-style: none;
+  }
+
+  .install-benefits li {
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 6px;
+    color: var(--slate);
+    position: relative;
+    padding-left: 8px;
+  }
+
+  .install-benefits li:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Mobile install menu */
+  @media (max-width: 600px) {
+    .install-menu {
+      max-height: 95vh;
+      border-radius: 12px;
+    }
+
+    .install-menu-header {
+      padding: 16px 20px;
+    }
+
+    .install-menu-header h2 {
+      font-size: 20px;
+    }
+
+    .install-menu-body {
+      padding: 20px;
+    }
+
+    .install-intro {
+      font-size: 14px;
+    }
+
+    .install-section h3 {
+      font-size: 15px;
+    }
+
+    .install-section li {
+      font-size: 13px;
+    }
+
+    .install-benefits li {
+      font-size: 13px;
+    }
+  }
+
+  /* Footer & Disclaimer */
+
+  .disclaimer-footer {
+    width: 100%;
+    max-width: 780px;
+    margin: 32px auto 0;
+    padding: 16px 20px;
+    background: rgba(250, 247, 240, 0.03);
+    border-top: 1px solid rgba(201, 168, 76, 0.15);
+    border-radius: 8px 8px 0 0;
+    font-family: 'Source Sans 3', sans-serif;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .disclaimer-footer.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(20px);
+  }
+
+  .disclaimer-short {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+
+  .disclaimer-short:hover {
+    opacity: 0.8;
+  }
+
+  .disclaimer-icon {
+    font-size: 16px;
+    color: var(--gold);
+    flex-shrink: 0;
+  }
+
+  .disclaimer-text {
+    font-size: 11px;
+    color: rgba(250, 247, 240, 0.6);
+    letter-spacing: 0.5px;
+    flex: 1;
+  }
+
+  .disclaimer-toggle {
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+  }
+
+  .disclaimer-short:hover .disclaimer-toggle {
+    color: rgba(201, 168, 76, 0.8);
+  }
+
+  .disclaimer-full {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, margin-top 0.4s ease, opacity 0.4s ease;
+    opacity: 0;
+    margin-top: 0;
+  }
+
+  .disclaimer-full.expanded {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: 16px;
+  }
+
+  .disclaimer-full p {
+    font-size: 11px;
+    line-height: 1.6;
+    color: rgba(250, 247, 240, 0.7);
+    margin: 0 0 12px 0;
+  }
+
+  .disclaimer-full p:last-child {
+    margin-bottom: 0;
+  }
+
+  .disclaimer-full strong {
+    color: rgba(201, 168, 76, 0.9);
+    font-weight: 600;
+  }
+
+  /* Mobile adjustments for disclaimer */
+  @media (max-width: 600px) {
+    header {
+      padding: 45px 100px 0; /* Top padding for buttons, less side padding on mobile */
+    }
+
+    .install-btn {
+      top: 10px;
+      left: 10px;
+      padding: 6px 10px;
+      font-size: 10px;
+    }
+
+    .index-menu-btn {
+      top: 10px;
+      right: 10px;
+      padding: 6px 10px;
+      font-size: 10px;
+    }
+
+    .disclaimer-footer {
+      position: sticky;
+      bottom: 0;
+      z-index: 100;
+      background: rgba(15, 31, 61, 0.95);
+      backdrop-filter: blur(10px);
+      margin: 24px 0 0;
+      padding: 14px 16px;
+      border-radius: 0;
+    }
+
+    .disclaimer-text {
+      font-size: 10px;
+    }
+
+    .disclaimer-full p {
+      font-size: 10px;
+      line-height: 1.5;
+    }
+  }
+
+  /* Extra small mobile adjustments */
+  @media (max-width: 400px) {
+    header {
+      padding: 0 10px; /* Minimal padding on very small screens */
+    }
+
+    .install-btn {
+      position: static; /* Remove absolute positioning */
+      display: block;
+      margin: 0 auto 12px;
+      font-size: 10px;
+    }
+
+    .index-menu-btn {
+      position: static; /* Remove absolute positioning */
+      display: block;
+      margin: 0 auto 12px;
+    }
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     Random Mode Toggle
+     ══════════════════════════════════════════════════════════════ */
+
+  .random-toggle-wrap {
+    width: 100%;
+    max-width: 780px;
+    margin: 16px auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .random-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    color: rgba(250,247,240,0.6);
+    font-weight: 600;
+    letter-spacing: 1px;
+    transition: color 0.2s;
+  }
+
+  .random-toggle-label:hover {
+    color: var(--gold);
+  }
+
+  /* Custom checkbox styling */
+  .random-toggle-label input[type="checkbox"] {
+    appearance: none;
+    width: 40px;
+    height: 20px;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .random-toggle-label input[type="checkbox"]:checked {
+    background: rgba(201,168,76,0.4);
+    border-color: var(--gold);
+  }
+
+  .random-toggle-label input[type="checkbox"]::before {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--gold);
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s ease;
+  }
+
+  .random-toggle-label input[type="checkbox"]:checked::before {
+    transform: translateX(20px);
+  }
+
+  .random-toggle-text {
+    user-select: none;
+  }
+
+  .random-cycle-count {
+    font-size: 10px;
+    color: rgba(250,247,240,0.4);
+    letter-spacing: 1px;
+  }
+
+  /* Mobile adjustments for random toggle */
+  @media (max-width: 600px) {
+    .random-toggle-wrap {
+      margin-top: 12px;
+    }
+
+    .random-toggle-label {
+      font-size: 11px;
+    }
+
+    .random-cycle-count {
+      font-size: 9px;
+    }
+  }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="eyebrow">Landkreis Karlsruhe · Einbürgerung</div>
-  <h1>Lern<span>karten</span></h1>
-  <div class="subtitle">Klicken Sie auf die Karte, um die Antwort zu sehen</div>
+  <button class="install-btn" id="installBtn" onclick="showInstallInstructions()" title="Als App installieren">
+    📲 Installieren
+  </button>
   <button class="index-menu-btn" onclick="openIndexMenu()" title="Alle Fragen anzeigen">
     ☰ Index
   </button>
+  <div class="eyebrow">Einbürgerung KA · Private Studienhilfe</div>
+  <h1>Lern<span>karten</span></h1>
+  <div class="subtitle">Klicken Sie auf die Karte, um die Antwort zu sehen</div>
 </header>
 
 <!-- Index Menu Modal -->
@@ -1090,6 +1555,61 @@
     </div>
     <div class="index-menu-body" id="indexMenuBody">
       <!-- Generated dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- PWA Installation Instructions Modal -->
+<div class="install-menu-overlay" id="installMenuOverlay" onclick="closeInstallMenu()">
+  <div class="install-menu" onclick="event.stopPropagation()">
+    <div class="install-menu-header">
+      <h2>📲 Als App installieren</h2>
+      <button class="install-menu-close" onclick="closeInstallMenu()">×</button>
+    </div>
+    <div class="install-menu-body">
+      <p class="install-intro">
+        Installiere diese App auf deinem Gerät für schnellen Zugriff und Offline-Nutzung!
+      </p>
+
+      <div class="install-section">
+        <h3>📱 iPhone / iPad (Safari)</h3>
+        <ol>
+          <li>Tippe auf das <strong>Teilen-Symbol</strong> (Viereck mit Pfeil nach oben) in der Safari-Leiste</li>
+          <li>Scrolle nach unten und wähle <strong>"Zum Home-Bildschirm"</strong></li>
+          <li>Tippe auf <strong>"Hinzufügen"</strong> oben rechts</li>
+          <li>Die App erscheint auf deinem Home-Bildschirm 🎉</li>
+        </ol>
+      </div>
+
+      <div class="install-section">
+        <h3>🤖 Android (Chrome)</h3>
+        <ol>
+          <li>Tippe auf das <strong>Menü</strong> (drei Punkte) oben rechts</li>
+          <li>Wähle <strong>"App installieren"</strong> oder <strong>"Zum Startbildschirm hinzufügen"</strong></li>
+          <li>Bestätige mit <strong>"Installieren"</strong></li>
+          <li>Die App erscheint in deiner App-Liste 🎉</li>
+        </ol>
+      </div>
+
+      <div class="install-section">
+        <h3>💻 Desktop (Chrome / Edge)</h3>
+        <ol>
+          <li>Klicke auf das <strong>Installieren-Symbol</strong> in der Adressleiste (rechts)</li>
+          <li>Oder: Menü → <strong>"Installieren..."</strong></li>
+          <li>Bestätige die Installation</li>
+          <li>Die App öffnet sich in einem eigenen Fenster 🎉</li>
+        </ol>
+      </div>
+
+      <div class="install-benefits">
+        <h3>✨ Vorteile</h3>
+        <ul>
+          <li>🚀 Schneller Zugriff wie eine native App</li>
+          <li>📴 Funktioniert auch offline</li>
+          <li>💾 Dein Lernfortschritt wird gespeichert</li>
+          <li>🔔 Keine Installation aus App Store nötig</li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>
@@ -1182,11 +1702,47 @@
   </button>
 </div>
 
-<div class="kbd-hints">
+<div class="random-toggle-wrap">
+  <label class="random-toggle-label">
+    <input type="checkbox" id="randomModeToggle" onchange="toggleRandomMode()">
+    <span class="random-toggle-text">🎲 Zufallsmodus</span>
+  </label>
+  <span class="random-cycle-count" id="randomCycleCount"></span>
+</div>
+
+<div class="kbd-hints" id="kbdHints">
   <span class="kbd-hint"><kbd>←</kbd> Zurück</span>
   <span class="kbd-hint"><kbd>→</kbd> Weiter</span>
   <span class="kbd-hint"><kbd>Space</kbd> Umdrehen</span>
 </div>
+
+<footer class="disclaimer-footer" id="disclaimerFooter">
+  <div class="disclaimer-short" onclick="toggleDisclaimer()">
+    <span class="disclaimer-icon">ⓘ</span>
+    <span class="disclaimer-text">
+      Dies ist eine private Lernhilfe und keine offizielle Quelle.
+    </span>
+    <span class="disclaimer-toggle" id="disclaimerToggle">Mehr erfahren ▼</span>
+  </div>
+
+  <div class="disclaimer-full" id="disclaimerFull">
+    <p><strong>Rechtlicher Hinweis:</strong></p>
+    <p>
+      Diese Anwendung ist ein <strong>privater Beitrag</strong> zur Lernunterstützung und stellt
+      <strong>KEINE offizielle Quelle</strong> dar. Sie wurde nicht von Landkreis Karlsruhe,
+      dem Land Baden-Württemberg oder einer anderen Regierungsbehörde erstellt, autorisiert
+      oder unterstützt.
+    </p>
+    <p>
+      Die Inhalte basieren auf öffentlich verfügbaren offiziellen Dokumenten, aber diese App
+      ist ein persönliches Studienmaterial ohne amtlichen oder behördlichen Charakter.
+    </p>
+    <p>
+      <strong>Nutzer sollten sich auf die offiziellen Materialien der zuständigen Behörden
+      für ihre Einbürgerungsvorbereitung verlassen.</strong>
+    </p>
+  </div>
+</footer>
 
 <script>
 const cards = [
@@ -1396,9 +1952,92 @@ const cards = [
   }
 ];
 
+// ══════════════════════════════════════════════════════════════
+//  Disclaimer Toggle
+// ══════════════════════════════════════════════════════════════
+
+function toggleDisclaimer() {
+  const fullSection = document.getElementById('disclaimerFull');
+  const toggleText = document.getElementById('disclaimerToggle');
+
+  const isExpanded = fullSection.classList.contains('expanded');
+
+  if (isExpanded) {
+    fullSection.classList.remove('expanded');
+    toggleText.textContent = 'Mehr erfahren ▼';
+  } else {
+    fullSection.classList.add('expanded');
+    toggleText.textContent = 'Weniger anzeigen ▲';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Install Functions
+// ══════════════════════════════════════════════════════════════
+
+// Show install instructions modal
+function showInstallInstructions() {
+  document.getElementById('installMenuOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden'; // Prevent body scroll
+}
+
+// Close install instructions modal
+function closeInstallMenu() {
+  document.getElementById('installMenuOverlay').classList.remove('active');
+  document.body.style.overflow = ''; // Restore body scroll
+}
+
+// Handle PWA install prompt
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent the mini-infobar from appearing on mobile
+  e.preventDefault();
+  // Stash the event so it can be triggered later
+  deferredPrompt = e;
+  // Update install button to trigger native prompt
+  const installBtn = document.getElementById('installBtn');
+  if (installBtn) {
+    installBtn.onclick = async () => {
+      if (deferredPrompt) {
+        // Show native install prompt
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        // Clear the deferred prompt
+        deferredPrompt = null;
+      } else {
+        // Show instructions if no native prompt available
+        showInstallInstructions();
+      }
+    };
+  }
+});
+
+// Detect if app is already installed
+window.addEventListener('appinstalled', () => {
+  console.log('PWA was installed');
+  deferredPrompt = null;
+});
+
+// Check if running as installed PWA
+if (window.matchMedia('(display-mode: standalone)').matches) {
+  console.log('Running as installed PWA');
+  // Optionally hide install button when already installed
+  // document.getElementById('installBtn').style.display = 'none';
+}
+
+// ══════════════════════════════════════════════════════════════
+
 let current = 0;
 let isFlipped = false;
 let currentFilter = "all"; // "all", "revision", "new"
+
+// Random mode state
+let randomMode = false;
+let randomPool = [];
+let currentRandomCycle = 0;
 
 // Load tracking data from localStorage or initialize
 let cardTracking = JSON.parse(localStorage.getItem('einbuergerung-tracking')) || {};
@@ -1625,15 +2264,123 @@ function setFilter(filter) {
     btn.classList.toggle('active', btn.dataset.filter === filter);
   });
 
-  // If current card doesn't match filter, go to next matching card
-  if (!cardMatchesFilter(current)) {
-    const nextCard = findNextMatchingCard(current);
-    if (nextCard !== -1) {
-      goTo(nextCard);
+  // If random mode is active, rebuild pool with new filter
+  if (randomMode) {
+    currentRandomCycle = 0; // Reset cycle counter when filter changes
+    initializeRandomPool();
+
+    // Jump to first card in new random pool
+    if (randomPool.length > 0) {
+      const nextIndex = pickRandomCard();
+      if (nextIndex !== -1) {
+        goTo(nextIndex);
+      }
+    }
+  } else {
+    // Sequential mode - existing logic
+    if (!cardMatchesFilter(current)) {
+      const nextCard = findNextMatchingCard(current);
+      if (nextCard !== -1) {
+        goTo(nextCard);
+      }
     }
   }
 
   updateNavigationButtons();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Random Mode Functions
+// ══════════════════════════════════════════════════════════════
+
+function toggleRandomMode() {
+  const checkbox = document.getElementById('randomModeToggle');
+  randomMode = checkbox.checked;
+
+  if (randomMode) {
+    // Entering random mode
+    initializeRandomPool();
+
+    // Jump to first random card
+    if (randomPool.length > 0) {
+      const nextIndex = pickRandomCard();
+      if (nextIndex !== -1) {
+        goTo(nextIndex);
+      }
+    }
+  } else {
+    // Exiting random mode - clear pool
+    randomPool = [];
+    updateRandomCycleDisplay();
+    updateNavigationButtons();
+  }
+}
+
+function initializeRandomPool() {
+  // Build pool of all cards matching current filter
+  randomPool = [];
+
+  for (let i = 0; i < cards.length; i++) {
+    if (cardMatchesFilter(i)) {
+      randomPool.push(i);
+    }
+  }
+
+  // Shuffle the pool using Fisher-Yates algorithm
+  shuffleArray(randomPool);
+
+  updateRandomCycleDisplay();
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function pickRandomCard() {
+  if (randomPool.length === 0) {
+    // All cards shown in this cycle - start new cycle
+    currentRandomCycle++;
+    initializeRandomPool();
+
+    // If still empty after init, no cards match filter
+    if (randomPool.length === 0) {
+      return -1;
+    }
+  }
+
+  // Pick first card from shuffled pool and remove it
+  const nextIndex = randomPool.shift();
+  updateRandomCycleDisplay();
+
+  return nextIndex;
+}
+
+function updateRandomCycleDisplay() {
+  const display = document.getElementById('randomCycleCount');
+  if (display) {
+    if (randomMode && randomPool.length > 0) {
+      const shown = getTotalMatchingCards() - randomPool.length;
+      const total = getTotalMatchingCards();
+      display.textContent = `${shown}/${total} in Zyklus ${currentRandomCycle + 1}`;
+    } else if (randomMode && randomPool.length === 0) {
+      display.textContent = `Zyklus ${currentRandomCycle + 1} abgeschlossen`;
+    } else {
+      display.textContent = '';
+    }
+  }
+}
+
+function getTotalMatchingCards() {
+  let count = 0;
+  for (let i = 0; i < cards.length; i++) {
+    if (cardMatchesFilter(i)) {
+      count++;
+    }
+  }
+  return count;
 }
 
 function cardMatchesFilter(index) {
@@ -1669,12 +2416,21 @@ function findPrevMatchingCard(fromIndex) {
 }
 
 function updateNavigationButtons() {
-  // Disable prev/next if no matching cards in that direction
-  const prevMatch = findPrevMatchingCard(current);
-  const nextMatch = findNextMatchingCard(current);
+  const prevBtn = document.getElementById('btnPrev');
+  const nextBtn = document.getElementById('btnNext');
 
-  document.getElementById('btnPrev').disabled = prevMatch === -1;
-  document.getElementById('btnNext').disabled = nextMatch === -1;
+  if (randomMode) {
+    // In random mode, disable previous button
+    if (prevBtn) prevBtn.disabled = true;
+    if (nextBtn) nextBtn.disabled = randomPool.length === 0 && getTotalMatchingCards() === 0;
+  } else {
+    // Sequential mode - existing logic
+    const prevMatch = findPrevMatchingCard(current);
+    const nextMatch = findNextMatchingCard(current);
+
+    if (prevBtn) prevBtn.disabled = prevMatch === -1;
+    if (nextBtn) nextBtn.disabled = nextMatch === -1;
+  }
 }
 
 function render() {
@@ -1703,6 +2459,17 @@ function render() {
 function flipCard() {
   isFlipped = !isFlipped;
   document.getElementById('card').classList.toggle('flipped', isFlipped);
+
+  // Hide/show footer and keyboard hints when card is flipped
+  const footer = document.getElementById('disclaimerFooter');
+  const kbdHints = document.getElementById('kbdHints');
+
+  if (footer) {
+    footer.classList.toggle('hidden', isFlipped);
+  }
+  if (kbdHints) {
+    kbdHints.classList.toggle('hidden', isFlipped);
+  }
 
   // Track flip
   if (isFlipped && cardTracking.cards[current]) {
@@ -1733,17 +2500,26 @@ function goTo(index) {
 }
 
 function navigate(dir) {
-  let nextIndex;
-  if (currentFilter === "all") {
-    // Normal navigation
-    nextIndex = current + dir;
-    if (nextIndex < 0 || nextIndex >= cards.length) return;
+  if (randomMode) {
+    // Random mode: ignore direction, always pick next random card
+    const nextIndex = pickRandomCard();
+    if (nextIndex !== -1) {
+      goTo(nextIndex);
+    }
   } else {
-    // Filter-aware navigation
-    nextIndex = dir > 0 ? findNextMatchingCard(current) : findPrevMatchingCard(current);
-    if (nextIndex === -1) return;
+    // Sequential mode: existing logic
+    let nextIndex;
+    if (currentFilter === "all") {
+      // Normal navigation
+      nextIndex = current + dir;
+      if (nextIndex < 0 || nextIndex >= cards.length) return;
+    } else {
+      // Filter-aware navigation
+      nextIndex = dir > 0 ? findNextMatchingCard(current) : findPrevMatchingCard(current);
+      if (nextIndex === -1) return;
+    }
+    goTo(nextIndex);
   }
-  goTo(nextIndex);
 }
 
 document.addEventListener('keydown', e => {
@@ -1779,13 +2555,13 @@ const cardElement = document.getElementById('card');
 cardElement.addEventListener('touchstart', e => {
   touchStartX = e.changedTouches[0].screenX;
   touchStartY = e.changedTouches[0].screenY;
-}, false);
+}, { passive: true });
 
 cardElement.addEventListener('touchend', e => {
   touchEndX = e.changedTouches[0].screenX;
   touchEndY = e.changedTouches[0].screenY;
   handleSwipe();
-}, false);
+}, { passive: true });
 
 function handleSwipe() {
   const swipeThreshold = 50; // Minimum distance for a swipe
