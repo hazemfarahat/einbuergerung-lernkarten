@@ -1,8 +1,10 @@
 // Service Worker for offline flashcard app
-const CACHE_NAME = 'einbuergerung-lernkarten-v1';
+const CACHE_NAME = 'einbuergerung-lernkarten-v2';
 const urlsToCache = [
-  './Einbuergerung_Lernkarten.html',
-  './manifest.json'
+  './',
+  './index.html',
+  './manifest.json',
+  './data/cards.json'
 ];
 
 // Install service worker and cache files

@@ -1454,6 +1454,16 @@
     align-items: center;
     justify-content: center;
     gap: 12px;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  .random-toggle-wrap.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(20px);
+    visibility: hidden;
   }
 
   .random-toggle-label {
@@ -1745,212 +1755,8 @@
 </footer>
 
 <script>
-const cards = [
-  // ── Kapitel 1: Aufbau und Organisation des Staates ──────────────────────
-  {
-    chapter: `1. Aufbau und Organisation`,
-    q: `Welche Staatsform hat die Bundesrepublik? Welche rechtliche Qualität?`,
-    original: `Staatsform: die Bundesrepublik ist ein sozialer und demokratischer Bundesstaat.\\nRechtliche Qualität: die Bundesrepublik ist ein Rechtsstaat mit Gewaltenteilung.`,
-    simple: `Deutschland ist ein demokratischer Bundesstaat – das Volk wählt die Regierung. Es ist auch ein Rechtsstaat: Alle müssen sich an Gesetze halten, auch die Regierung selbst. Die Macht ist auf drei unabhängige Bereiche aufgeteilt (Gewaltenteilung).`,
-  },
-  {
-    chapter: `1. Aufbau und Organisation`,
-    q: `Was bedeutet „Bundesstaat" und wie ist dieser aufgebaut?`,
-    original: `Bundesstaat bedeutet, dieser Staat ist „föderal" aufgebaut, d. h. er besteht aus 16 kleinen „Staaten", die als „Bundesländer" bezeichnet werden. Jedes dieser Länder hat ein eigenes Parlament: den Landtag, und eine eigene Regierung: die Landesregierung. In Baden-Württemberg finden alle fünf Jahre Wahlen statt, wobei die Bürger des Landes Abgeordnete in dieses Parlament wählen (Landtagswahl). Bund und Länder erlassen eigene Gesetze.`,
-    simple: `Deutschland besteht aus 16 Bundesländern. Jedes hat ein eigenes Parlament (Landtag) und eine eigene Regierung. In Baden-Württemberg wählt man den Landtag alle 5 Jahre. Sowohl der Bund als auch die Länder können eigene Gesetze machen.`,
-  },
-  {
-    chapter: `1. Aufbau und Organisation`,
-    q: `Was ist die wichtigste Aufgabe des Bundesrates?`,
-    original: `Im Bundesrat wirken die Länder bei der Gesetzgebung des Bundes mit, sie achten darauf, dass ihre Interessen bei neuen Bundesgesetzen gewahrt bleiben (besonders finanzielle, aber auch politische Interessen).`,
-    simple: `Der Bundesrat vertritt die 16 Bundesländer auf Bundesebene. Er stellt sicher, dass neue Bundesgesetze die Interessen der Länder nicht verletzen – besonders finanzielle und politische Interessen.`,
-  },
-  {
-    chapter: `1. Aufbau und Organisation`,
-    q: `Was ist der Bundestag?`,
-    original: `Auch der Gesamtstaat Bundesrepublik („Bund") hat ein Parlament: der Bundestag (in Berlin). Der Bundestag besteht im Gegensatz zum Bundesrat aus Vertretern der Bürger. Die Bürger der Bundesrepublik wählen diese Vertreter als Abgeordnete in den Bundestag. Die Bundestagswahlen finden alle vier Jahre statt.`,
-    simple: `Der Bundestag ist das nationale Parlament in Berlin. Die Bürger wählen ihre Vertreter (Abgeordnete) direkt alle 4 Jahre. Er besteht – anders als der Bundesrat – aus Vertretern der Bürger, nicht der Länderregierungen.`,
-  },
-  {
-    chapter: `1. Aufbau und Organisation`,
-    q: `Was ist die wichtigste Aufgabe von Bundestag bzw. Landtag?`,
-    original: `Im Bundestag bzw. Landtag werden im Wesentlichen neue Bundesgesetze bzw. Landesgesetze beschlossen, und zwar von den Abgeordneten, die von den Bürgern gewählt wurden.`,
-    simple: `Hauptaufgabe: Gesetze beschließen. Dies tun die vom Volk gewählten Abgeordneten. Der Bundestag macht Bundesgesetze, der Landtag macht Landesgesetze.`,
-  },
-  {
-    chapter: `1. Aufbau und Organisation`,
-    q: `Welche Wahlen und Parlamente gibt es noch?`,
-    original: `Es gibt in Baden-Württemberg noch die Wahlen zum Bürgermeister (alle acht Jahre) und zu folgenden Parlamenten: die Kreistage (die Bewohner eines Landkreises wählen Abgeordnete dort hinein) und Gemeinderäte (die Bewohner einer Stadt oder Gemeinde wählen). Außerdem auf europäischer Ebene: das Europaparlament (Bürger Europas wählen).`,
-    simple: `In Baden-Württemberg gibt es außerdem:\\n• Bürgermeisterwahl – alle 8 Jahre\\n• Kreistag – alle 5 Jahre\\n• Gemeinderat – alle 5 Jahre\\nAuf EU-Ebene: Europaparlament – alle 5 Jahre.`,
-  },
-  {
-    chapter: `1. Aufbau und Organisation`,
-    q: `Was versteht man unter „Demokratie"?`,
-    original: `„Alle Staatsgewalt geht vom Volke aus". Das heißt: die Bürger bestimmen in Wahlen selbst, wer in den Volksvertretungen sitzt und damit für die Gesetze verantwortlich ist, an die sich alle Bürger halten müssen.`,
-    simple: `Demokratie = das Volk hat die Macht. Die Bürger wählen ihre Vertreter, die dann Gesetze machen, an die sich alle halten müssen – auch der Staat selbst.\\nMerkesatz: „Alle Staatsgewalt geht vom Volke aus."`,
-  },
-  {
-    chapter: `1. Aufbau und Organisation`,
-    q: `Wer ist das Staatsoberhaupt? Sein wichtigstes Merkmal? Seine wichtigste Aufgabe?`,
-    original: `Der Bundespräsident. Er gehört einer Partei an, soll aber sein Amt überparteilich führen. Er repräsentiert den Staat.`,
-    simple: `Staatsoberhaupt = Bundespräsident.\\nEr handelt überparteilich (über den Parteien stehend) und repräsentiert Deutschland nach außen – z. B. bei offiziellen Anlässen und im Ausland.`,
-  },
-  {
-    chapter: `1. Aufbau und Organisation`,
-    q: `Was bedeutet: Rechtsstaat und Gewaltenteilung?`,
-    original: `Die staatliche Macht („Gewalt") ist auf drei unabhängige Einrichtungen aufgeteilt: in den Parlamenten („Legislative") werden die Gesetze beschlossen. Die Verwaltung („Exekutive") führt die Gesetze aus und ist an diese gebunden. Die Gerichte („Judikative") können prüfen, ob sich das Parlament und die Verwaltung an das Recht (daher „Rechtsstaat") und an die Gesetze halten. Wenn nicht, sorgen die Gerichte dafür, dass die Gesetze eingehalten werden.`,
-    simple: `3 unabhängige Gewalten:\\n• Legislative (Parlament) → macht Gesetze\\n• Exekutive (Regierung/Verwaltung) → führt Gesetze aus\\n• Judikative (Gerichte) → kontrolliert die Einhaltung\\n\\nKeine Einrichtung kann alleine alles bestimmen.`,
-  },
-  // ── Kapitel 2: Wahlen ────────────────────────────────────────────────────
-  {
-    chapter: `2. Wahlen`,
-    q: `Was sind die wichtigsten Merkmale von Wahlen zu den Parlamenten?`,
-    original: `allgemein: jeder Deutsche darf wählen, es kommt nicht an auf Geschlecht, Religion, Vermögen usw.\\nfrei: jeder darf die Partei wählen, die er will; es herrscht keine Wahlpflicht\\ngleich: jede Stimme hat das gleiche Gewicht, keine Stimme zählt mehr als die andere\\ngeheim: niemand muss sagen oder zeigen, welche Partei er gewählt hat`,
-    simple: `Die 4 Wahlgrundsätze:\\n• Allgemein – alle Deutschen dürfen wählen, unabhängig von Geschlecht, Religion oder Vermögen\\n• Frei – keine Wahlpflicht, jeder wählt wen er möchte\\n• Gleich – jede Stimme zählt gleich viel\\n• Geheim – niemand muss seine Wahl offenbaren`,
-  },
-  {
-    chapter: `2. Wahlen`,
-    q: `Welche Wahlen finden statt und nach welcher Zeit?`,
-    original: `Wahlen zum Bundestag alle vier Jahre; Europaparlament, Landtag, Kreistag und Gemeinderat in Baden-Württemberg alle fünf Jahre; Bürgermeister in Baden-Württemberg alle acht Jahre.`,
-    simple: `Merkhilfe:\\n• 4 Jahre → Bundestag\\n• 5 Jahre → EU-Parlament, Landtag, Kreistag, Gemeinderat (BW)\\n• 8 Jahre → Bürgermeister (Baden-Württemberg)`,
-  },
-  // ── Kapitel 3: Grundgesetz ───────────────────────────────────────────────
-  {
-    chapter: `3. Grundgesetz`,
-    q: `Was sind die wichtigsten Inhalte des Grundgesetzes?`,
-    original: `Wie der Staat aufgebaut ist - welche Staatsorgane es gibt (Parlamente u. a.) - Form des Rechtsstaates und des Bundesstaates - die Grundrechte der Bürger - Wahl des Bundeskanzlers, des Bundespräsidenten, der Minister und anderer Repräsentanten.`,
-    simple: `Das Grundgesetz ist Deutschlands Verfassung – das höchste Gesetz. Es regelt:\\n• Den Aufbau des Staates (Parlamente, Regierung, Gerichte)\\n• Die Grundrechte jedes Bürgers\\n• Wie Kanzler, Präsident und Minister bestimmt werden`,
-  },
-  {
-    chapter: `3. Grundgesetz`,
-    q: `Wie lauten einige Grundrechte?`,
-    original: `Menschenwürde - Recht auf Leben - Gleichheitsgrundsatz - Gleichbehandlung von Mann und Frau - Glaubensfreiheit - Gewissensfreiheit - Meinungsfreiheit`,
-    simple: `Die wichtigsten Grundrechte:\\n• Menschenwürde (Art. 1) – unantastbar\\n• Recht auf Leben\\n• Gleichheit vor dem Gesetz\\n• Gleichberechtigung von Mann und Frau\\n• Glaubens- und Gewissensfreiheit\\n• Meinungsfreiheit`,
-  },
-  {
-    chapter: `3. Grundgesetz`,
-    q: `Was muss derjenige anerkennen, der die Freiheiten des Grundgesetzes hier in Anspruch nimmt?`,
-    original: `Dass es verboten ist, eine andere staatliche Ordnung als die bestehende hier anzustreben (z. B. Mullahstaat oder Diktatur) durch Unterstützung terroristischer Gruppen oder religiöser Extremisten.`,
-    simple: `Wer in Deutschland die Grundrechte genießt, muss die demokratische Ordnung akzeptieren. Es ist verboten, eine Diktatur, einen Gottesstaat oder andere extremistische Staatsformen anzustreben oder solche Gruppen zu unterstützen.`,
-  },
-  {
-    chapter: `3. Grundgesetz`,
-    q: `Was gilt hinsichtlich der Religionen?`,
-    original: `Staat und Religion sind getrennt, d. h. der Staat wird nicht nach religiösen Grundsätzen regiert. Aber jeder Einzelne darf seine Religion frei ausüben, weil der Staat neutral ist.`,
-    simple: `Trennung von Staat und Religion:\\n• Der Staat macht keine religiösen Gesetze\\n• Jeder darf seine Religion frei ausüben\\n• Der Staat ist religiös neutral – er bevorzugt keine Religion`,
-  },
-  // ── Kapitel 4: Grund- und Menschenrechte ────────────────────────────────
-  {
-    chapter: `4. Grund- und Menschenrechte`,
-    q: `Was ist das Menschenbild des Grundgesetzes?`,
-    original: `Das eines freien, selbstbestimmten Menschen, der aber die Verpflichtungen und Gesetze, die ihm der Staat auferlegt und vorgibt, beachtet.`,
-    simple: `Das Grundgesetz sieht jeden Menschen als frei und selbstbestimmt. Aber: Mit Freiheit kommt Verantwortung – jeder muss die staatlichen Gesetze und Pflichten respektieren.`,
-  },
-  {
-    chapter: `4. Grund- und Menschenrechte`,
-    q: `Was bedeutet: Menschenwürde?`,
-    original: `Der Staat darf niemanden unmenschlich behandeln. „Der Mensch wird geachtet, weil er Mensch ist".`,
-    simple: `Jeder Mensch hat einen unveräußerlichen Wert, allein weil er ein Mensch ist. Der Staat muss jeden ohne Ausnahme mit Würde behandeln – niemand darf unmenschlich behandelt werden.`,
-  },
-  {
-    chapter: `4. Grund- und Menschenrechte`,
-    q: `Was bedeutet: Gleichheit vor dem Gesetz?`,
-    original: `Vor dem Gesetz sind alle Menschen gleich, niemand darf ohne Grund ungleich behandelt werden.`,
-    simple: `Alle Menschen in Deutschland sind vor dem Gesetz gleich. Niemand darf wegen Herkunft, Religion, Geschlecht oder anderen Merkmalen ohne Grund schlechter behandelt werden.`,
-  },
-  {
-    chapter: `4. Grund- und Menschenrechte`,
-    q: `Was bedeutet: Recht auf Leben und körperliche Unversehrtheit?`,
-    original: `Das menschliche Leben stellt den höchsten Wert des Grundgesetzes dar. Der Staat darf niemanden töten und muss jeden bestrafen, der jemanden tötet oder jemanden anderen verletzt.`,
-    simple: `Das Leben ist der höchste Wert im Grundgesetz. Der Staat schützt das Leben und die körperliche Unversehrtheit jedes Menschen. Töten und Körperverletzung werden bestraft.`,
-  },
-  {
-    chapter: `4. Grund- und Menschenrechte`,
-    q: `Was bedeutet: Meinungsfreiheit?`,
-    original: `Jeder darf seine Meinung öffentlich ohne Angst vor Strafe äußern, es sei denn, er ruft zum gewaltsamen Umsturz des Staates oder seiner freiheitlichen Ordnung auf.`,
-    simple: `Man darf in Deutschland frei seine Meinung sagen – ohne Angst vor Strafe.\\nAUSNAHME: Wer zur Gewalt gegen den Staat oder seine demokratische Ordnung aufruft, ist nicht geschützt.`,
-  },
-  {
-    chapter: `4. Grund- und Menschenrechte`,
-    q: `Was bedeutet: Religionsfreiheit?`,
-    original: `Jeder darf seine Religion frei ausüben. Das bedeutet aber nicht, dass er anderen, auch Familienmitgliedern, seine Religion aufzwingen darf.`,
-    simple: `Jeder kann seine eigene Religion frei leben. Aber niemand darf anderen seine Religion aufzwingen – auch nicht den eigenen Familienmitgliedern.`,
-  },
-  {
-    chapter: `4. Grund- und Menschenrechte`,
-    q: `Wie sieht das Grundgesetz Mann und Frau?`,
-    original: `Nach dem Grundgesetz sind Mann und Frau gleichberechtigt. Der Mann steht nicht über der Frau.`,
-    simple: `Mann und Frau sind in Deutschland rechtlich vollständig gleichgestellt. Es gibt keine gesetzliche Vorrangstellung des Mannes – beide haben dieselben Rechte.`,
-  },
-  {
-    chapter: `4. Grund- und Menschenrechte`,
-    q: `Was wird von jemandem erwartet, der eingebürgert werden will?`,
-    original: `Dass er sich zum Grundgesetz, zum Menschenbild des Grundgesetzes und zu den Gesetzen dieses Staates bekennt und sie achtet. Die Gesetze der Bundesrepublik stehen über religiösen Vorschriften.`,
-    simple: `Wer Deutscher werden will, muss:\\n• Das Grundgesetz und alle deutschen Gesetze anerkennen und respektieren\\n• Verstehen und akzeptieren: deutsches Recht steht über religiösen Vorschriften`,
-  },
-  // ── Kapitel 5: Parlament, Regierung, Opposition ──────────────────────────
-  {
-    chapter: `5. Parlament, Regierung, Opposition`,
-    q: `Definieren Sie „Parlament"!`,
-    original: `Parlament bedeutet: Volksvertretung`,
-    simple: `Das Parlament ist die Volksvertretung – die vom Volk gewählten Vertreter, die im Namen der Bürger Gesetze beschließen.`,
-  },
-  {
-    chapter: `5. Parlament, Regierung, Opposition`,
-    q: `Was bedeutet „parlamentarische Opposition"?`,
-    original: `In den Parlamenten sind Parteien vertreten, die die Regierung bilden, weil sie bei den Wahlen die meisten Stimmen erhalten haben (Regierungsparteien). Daneben sitzen Parteien im Parlament, die bei den Wahlen unterlegen sind, weil sie weniger Stimmen erhalten haben als die Regierungsparteien (Oppositionsparteien). Die Oppositionsparteien nennt man auch die „parlamentarische Opposition", weil sie im Parlament sind.`,
-    simple: `Opposition = Parteien im Parlament, die NICHT in der Regierung sind. Sie haben bei der Wahl weniger Stimmen bekommen als die Regierungsparteien. Sie sitzen trotzdem im Parlament und bilden ein politisches Gegengewicht.`,
-  },
-  {
-    chapter: `5. Parlament, Regierung, Opposition`,
-    q: `Was ist die wichtigste Aufgabe der Opposition?`,
-    original: `Die Opposition soll die Arbeit der Regierung kontrollieren. Außerdem soll sie beitragen zur politischen Meinungsbildung in der Bevölkerung und eigene politische Vorschläge machen.`,
-    simple: `3 Aufgaben der Opposition:\\n1. Die Arbeit der Regierung kontrollieren\\n2. Zur politischen Meinungsbildung in der Bevölkerung beitragen\\n3. Eigene politische Vorschläge machen`,
-  },
-  {
-    chapter: `5. Parlament, Regierung, Opposition`,
-    q: `Woraus besteht die Bundes- bzw. Landesregierung?`,
-    original: `Die Regierung besteht aus den Bundesministern und dem Bundeskanzler (Bundesregierung) bzw. den Landesministern und dem Ministerpräsidenten (Landesregierungen). Bundeskanzler und Ministerpräsident nennt man auch „Regierungschef".`,
-    simple: `Bundesregierung = Bundeskanzler + Bundesminister\\nLandesregierung = Ministerpräsident + Landesminister\\n\\nBundeskanzler und Ministerpräsident werden auch „Regierungschef" genannt.`,
-  },
-  {
-    chapter: `5. Parlament, Regierung, Opposition`,
-    q: `Von wem wird die Regierung gewählt?`,
-    original: `Die Regierungen werden nicht vom Volk gewählt! Das Volk wählt nur die Parlamente. Bundeskanzler bzw. Ministerpräsident werden vom Parlament (Bundestag bzw. Landtag) gewählt. Die Minister werden nicht gewählt, sondern vom Regierungschef bestimmt.`,
-    simple: `Wichtig:\\n• Das VOLK wählt → das Parlament\\n• Das PARLAMENT wählt → den Bundeskanzler / Ministerpräsident\\n• Der REGIERUNGSCHEF bestimmt → die Minister (keine Wahl!)\\n\\nDas Volk wählt die Regierung NICHT direkt!`,
-  },
-  {
-    chapter: `5. Parlament, Regierung, Opposition`,
-    q: `Wie kann die Regierung abgelöst werden?`,
-    original: `Vor allem dadurch, dass bei Wahlen andere Parteien die Mehrheit bekommen, die dann mit ihrer Mehrheit die neue Regierung bilden.`,
-    simple: `Wenn bei einer Wahl andere Parteien mehr Stimmen bekommen, bilden sie die neue Mehrheit im Parlament und damit die neue Regierung. Das Parlament kann den Regierungschef auch direkt abwählen.`,
-  },
-  {
-    chapter: `5. Parlament, Regierung, Opposition`,
-    q: `Ist die Regierung in ihrer Arbeit unabhängig?`,
-    original: `Nein. Die Regierung ist dem Parlament, von dessen Mehrheit der Regierungschef gewählt wird, verantwortlich. Das Parlament könnte auch einen anderen Regierungschef wählen.`,
-    simple: `Nein – die Regierung ist nicht unabhängig. Sie muss sich vor dem Parlament verantworten und kann vom Parlament abgelöst werden. Die Mehrheit im Parlament hat den Regierungschef gewählt und kann ihn auch abwählen.`,
-  },
-  // ── Kapitel 6: Gerichte ──────────────────────────────────────────────────
-  {
-    chapter: `6. Gerichte`,
-    q: `Was ist das wichtigste Merkmal deutscher Gerichte?`,
-    original: `Richter sind unabhängig.`,
-    simple: `Das wichtigste Merkmal: Richter sind unabhängig. Sie urteilen nur nach dem Gesetz – nicht nach politischen Wünschen, Parteiinteressen oder öffentlicher Meinung.`,
-  },
-  {
-    chapter: `6. Gerichte`,
-    q: `Was bedeutet „Unabhängigkeit der Gerichte"?`,
-    original: `Es bedeutet, dass die Richter nur an Grundgesetz, Gesetze und Recht gebunden sind und nicht nach ihrer persönlichen Meinung oder der Meinung der Politiker oder der Öffentlichkeit entscheiden dürfen. Niemand darf ihnen vorschreiben, wer verurteilt wird oder wer vor Gericht gewinnen oder verlieren soll, nur das Gesetz.`,
-    simple: `Unabhängig = Richter entscheiden NUR nach dem Gesetz. Niemand – kein Politiker, keine Regierung, keine öffentliche Meinung – darf ihnen vorschreiben, wie sie urteilen sollen.`,
-  },
-  {
-    chapter: `6. Gerichte`,
-    q: `Welches ist das höchste deutsche Gericht?`,
-    original: `Das Bundesverfassungsgericht.`,
-    simple: `Das Bundesverfassungsgericht ist das höchste Gericht Deutschlands. Es prüft, ob Gesetze und staatliches Handeln mit dem Grundgesetz vereinbar sind. Seine Entscheidungen sind für alle verbindlich.`,
-  }
-];
+// Cards data will be loaded from JSON file
+let cards = [];
 
 // ══════════════════════════════════════════════════════════════
 //  Disclaimer Toggle
@@ -2436,10 +2242,10 @@ function updateNavigationButtons() {
 function render() {
   const c = cards[current];
   // Replace \n with spaces in question text for clean display
-  document.getElementById('questionText').textContent = c.q.replace(/\\n/g, ' ');
+  document.getElementById('questionText').textContent = c.q.replace(/\n/g, ' ');
   // Replace \n with <br> for proper line breaks in answers
-  document.getElementById('originalText').innerHTML = c.original.replace(/\\n/g, '<br>');
-  document.getElementById('simplifiedText').innerHTML = c.simple.replace(/\\n/g, '<br>');
+  document.getElementById('originalText').innerHTML = c.original.replace(/\n/g, '<br>');
+  document.getElementById('simplifiedText').innerHTML = c.simple.replace(/\n/g, '<br>');
   document.getElementById('frontChapter').textContent = c.chapter;
   document.getElementById('backChapter').textContent = c.chapter;
 
@@ -2460,15 +2266,19 @@ function flipCard() {
   isFlipped = !isFlipped;
   document.getElementById('card').classList.toggle('flipped', isFlipped);
 
-  // Hide/show footer and keyboard hints when card is flipped
+  // Hide/show footer, keyboard hints, and random toggle when card is flipped
   const footer = document.getElementById('disclaimerFooter');
   const kbdHints = document.getElementById('kbdHints');
+  const randomToggle = document.querySelector('.random-toggle-wrap');
 
   if (footer) {
     footer.classList.toggle('hidden', isFlipped);
   }
   if (kbdHints) {
     kbdHints.classList.toggle('hidden', isFlipped);
+  }
+  if (randomToggle) {
+    randomToggle.classList.toggle('hidden', isFlipped);
   }
 
   // Track flip
@@ -2642,7 +2452,7 @@ function buildIndexContent() {
       html += `<li class="index-question-item ${isCurrent ? 'current' : ''}" onclick="jumpToCard(${globalIndex})">`;
       html += `<div class="index-question-number">${globalIndex + 1}</div>`;
       html += `<div class="index-question-content">`;
-      html += `<div class="index-question-text">${card.q.replace(/\\n/g, ' ')}</div>`;
+      html += `<div class="index-question-text">${card.q.replace(/\n/g, ' ')}</div>`;
       html += `<div class="index-question-status ${statusClass}">${statusText}</div>`;
       html += `</div>`;
       html += `</li>`;
@@ -2660,17 +2470,37 @@ function jumpToCard(index) {
   goTo(index);
 }
 
-initializeTracking();  // Initialize tracking before rendering
-buildChapterNav();
-applyFontSize();  // Apply saved font size on load
-render();
+// ══════════════════════════════════════════════════════════════
+//  Load Card Data and Initialize App
+// ══════════════════════════════════════════════════════════════
 
-// Register service worker for offline support
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js')
-    .then(() => console.log('Service Worker registered'))
-    .catch(err => console.log('Service Worker registration failed:', err));
-}
+fetch('data/cards.json')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    // Populate cards array
+    cards = data;
+
+    // Initialize app
+    initializeTracking();
+    buildChapterNav();
+    applyFontSize();
+    render();
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js')
+        .then(() => console.log('Service Worker registered'))
+        .catch(err => console.log('Service Worker registration failed:', err));
+    }
+  })
+  .catch(err => {
+    console.error('Failed to load flashcard data:', err);
+  });
 </script>
 </body>
 </html>
